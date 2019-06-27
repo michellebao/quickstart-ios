@@ -525,11 +525,6 @@ private enum Constants {
     static let sparseTextModelName = "Sparse"
     static let denseTextModelName = "Dense"
     
-//    static let localAutoMLModelName = "local_automl_model"
-//    static let remoteAutoMLModelName = "remote_automl_model"
-//    static let localModelManifestFileName = "automl_labeler_manifest"
-//    static let autoMLManifestFileType = "json"
-    
     static let labelConfidenceThreshold: Float = 0.75
     static let smallDotRadius: CGFloat = 5.0
     static let largeDotRadius: CGFloat = 10.0

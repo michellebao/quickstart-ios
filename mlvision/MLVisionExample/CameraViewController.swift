@@ -142,55 +142,58 @@ class CameraViewController: UIViewController {
         if Thread.isMainThread { notificationHandler(); return }
         DispatchQueue.main.async { notificationHandler() }
     }
+
     
     // MARK: Other On-Device Detections
     
-//    private func featureClassification(storeValue: Double, feature: String) {
-//        switch feature {
-//        case "smile":
-//            let threshold = 0.6
-//            if storeValue > threshold {
-//                status = 1
-//            }
-//            else {
-//                status = 0
-//            }
-//        }
-//        case "eyes" {
-//            let threshold = 0.6
-//            if storeValue > threshold {
-//                status = 1
-//            }
-//            else {
-//                status = 0
-//            }
-//        }
-//        case "turn" {
-//            let threshold = 30
-//
-//
-//        }
-//        case "tilt" {
-//            let threshold = 30
-//        }
-//        default: break
-//
-//        let probThreshold = 0.6
-//        let eulerThreshold = 30.0
-//        if feature == "smile" {
-//            if storeValue > probThreshold {
-//                featureTracker(1, feature)
-//            }
-//            else {
-//                featureTracker(0, feature)
-//            }
-//        }
-//        else if feature == "eyes" {
-//
-//        }
-//    }
-//
-//    private func featureTracker(storeValue: Bool, feature: String)
+    private func featureClassification(storeValue: Double, feature: String) {
+        switch feature {
+        case "smile":
+            let threshold = 0.6
+            if storeValue > threshold {
+                status = 1
+            }
+            else {
+                status = 0
+            }
+        }
+        case "eyes" {
+            let threshold = 0.6
+            if storeValue > threshold {
+                status = 1
+            }
+            else {
+                status = 0
+            }
+        }
+        case "turn" {
+            let threshold = 30
+
+
+        }
+        case "tilt" {
+            let threshold = 30
+        }
+        default: break
+
+        let probThreshold = 0.6
+        let eulerThreshold = 30.0
+        if feature == "smile" {
+            if storeValue > probThreshold {
+                featureTracker(1, feature)
+            }
+            else {
+                featureTracker(0, feature)
+            }
+        }
+        else if feature == "eyes" {
+
+        }
+    }
+
+    private func featureTracker(storeValue: Bool, feature: String)
+    
+    
     
     private func detectFacesOnDevice(in image: VisionImage, width: CGFloat, height: CGFloat) {
         let options = VisionFaceDetectorOptions()
@@ -468,4 +471,13 @@ private enum Constant {
     static let padding: CGFloat = 10.0
     static let resultsLabelHeight: CGFloat = 200.0
     static let resultsLabelLines = 5
+}
+
+private struct Features {
+    var smile = 0
+    var blink = 0
+    var turnRight = 0
+    var turnLeft = 0
+    var tiltRight = 0
+    var tiltLeft = 0
 }
