@@ -56,13 +56,7 @@ static const int resultsLabelLines = 5;
 @interface CameraViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 typedef NS_ENUM(NSInteger, Detector) {
-  DetectorOnDeviceAutoMLImageLabeler,
   DetectorOnDeviceFace,
-  DetectorOnDeviceText,
-  DetectorOnDeviceObjectProminentNoClassifier,
-  DetectorOnDeviceObjectProminentWithClassifier,
-  DetectorOnDeviceObjectMultipleNoClassifier,
-  DetectorOnDeviceObjectMultipleWithClassifier
 };
 
 @property (nonatomic) NSArray *detectors;
@@ -89,32 +83,15 @@ typedef NS_ENUM(NSInteger, Detector) {
 
 - (NSString *)stringForDetector:(Detector)detector {
   switch (detector) {
-    case DetectorOnDeviceAutoMLImageLabeler:
-      return @"On-Device AutoML Image Labeler";
     case DetectorOnDeviceFace:
       return @"On-Device Face Detection";
-    case DetectorOnDeviceText:
-      return @"On-Device Text Recognition";
-    case DetectorOnDeviceObjectProminentNoClassifier:
-      return @"ODT for prominent object, only tracking";
-    case DetectorOnDeviceObjectProminentWithClassifier:
-      return @"ODT for prominent object with classification";
-    case DetectorOnDeviceObjectMultipleNoClassifier:
-      return @"ODT for multiple objects, only tracking";
-    case DetectorOnDeviceObjectMultipleWithClassifier:
-      return @"ODT for multiple objects with classification";
   }
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  _detectors = @[@(DetectorOnDeviceAutoMLImageLabeler),
-                 @(DetectorOnDeviceFace),
-                 @(DetectorOnDeviceText),
-                 @(DetectorOnDeviceObjectProminentNoClassifier),
-                 @(DetectorOnDeviceObjectProminentWithClassifier),
-                 @(DetectorOnDeviceObjectMultipleNoClassifier),
-                 @(DetectorOnDeviceObjectMultipleWithClassifier)];
+  _detectors = @[@(DetectorOnDeviceFace),
+                 ];
   _currentDetector = DetectorOnDeviceFace;
   _isUsingFrontCamera = YES;
   _captureSession = [[AVCaptureSession alloc] init];
@@ -157,112 +134,6 @@ typedef NS_ENUM(NSInteger, Detector) {
   self.isUsingFrontCamera = !_isUsingFrontCamera;
   [self removeDetectionAnnotations];
   [self setUpCaptureSessionInput];
-}
-
-#pragma mark - On-Device AutoML Detection
-
-/// Detects labels on the specified image using AutoML On-Device label API.
-///
-/// - Parameter image: The image.
-- (void)detectImageLabelsAutoMLOnDeviceInImage:(FIRVisionImage *)image
-                                         width:(CGFloat) width
-                                        height:(CGFloat)height {
-  [self registerAutoMLModelsIfNeeded];
-
-  // [START config_automl_label]
-  FIRVisionOnDeviceAutoMLImageLabelerOptions *options =
-  [[FIRVisionOnDeviceAutoMLImageLabelerOptions alloc]
-   initWithRemoteModelName:FIRRemoteAutoMLModelName
-   localModelName:FIRLocalAutoMLModelName];
-  options.confidenceThreshold = labelConfidenceThreshold;
-  // [END config_automl_label]
-
-  // [START init_automl_label]
-  FIRVisionImageLabeler *onDeviceAutoMLLabeler =
-  [self.vision onDeviceAutoMLImageLabelerWithOptions:options];
-  // [END init_automl_label]
-
-  dispatch_group_t group = dispatch_group_create();
-  dispatch_group_enter(group);
-
-  // [START detect_automl_label]
-  [onDeviceAutoMLLabeler processImage:image completion:^(NSArray<FIRVisionImageLabel *> * _Nullable labels, NSError * _Nullable error) {
-    // [START_EXCLUDE]
-    [self updatePreviewOverlayView];
-    [self removeDetectionAnnotations];
-    // [END_EXCLUDE]
-    if (error != nil) {
-      // [START_EXCLUDE]
-      NSLog(@"Failed to detect labels with error: %@.", error.localizedDescription);
-      dispatch_group_leave(group);
-      // [END_EXCLUDE]
-      return;
-    }
-
-    if (!labels ||  labels.count == 0) {
-      // [START_EXCLUDE]
-      dispatch_group_leave(group);
-      // [END_EXCLUDE]
-      return;
-    }
-
-    // [START_EXCLUDE]
-    CGRect annotationFrame = self.annotationOverlayView.frame;
-    CGRect resultsRect = CGRectMake(annotationFrame.origin.x + padding,
-                                    annotationFrame.size.height - padding - resultsLabelHeight,
-                                    annotationFrame.size.width - 2 * padding,
-                                    resultsLabelHeight);
-    UILabel *resultsLabel = [[UILabel alloc] initWithFrame:resultsRect];
-    resultsLabel.textColor = UIColor.yellowColor;
-    NSMutableArray *labelStrings = [NSMutableArray arrayWithCapacity:labels.count];
-    for (FIRVisionImageLabel *label in labels) {
-      [labelStrings addObject:[NSString stringWithFormat:@"Label: %@, Confidence: %@", label.text, label.confidence]];
-    }
-    resultsLabel.text = [labelStrings componentsJoinedByString:@"\n"];
-    resultsLabel.adjustsFontSizeToFitWidth = YES;
-    resultsLabel.numberOfLines = resultsLabelLines;
-    [self.annotationOverlayView addSubview:resultsLabel];
-    dispatch_group_leave(group);
-    // [END_EXCLUDE]
-  }];
-  // [END detect_automl_label]
-  dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-}
-
-- (void)registerAutoMLModelsIfNeeded {
-  if (self.areAutoMLModelsRegistered) return;
-
-  FIRModelDownloadConditions *initialConditions = [[FIRModelDownloadConditions alloc] init];
-  FIRModelDownloadConditions *updateConditions =
-  [[FIRModelDownloadConditions alloc] initWithAllowsCellularAccess:NO
-                                       allowsBackgroundDownloading:YES];
-  FIRRemoteModel *remoteModel = [[FIRRemoteModel alloc] initWithName:FIRRemoteAutoMLModelName
-                                                  allowsModelUpdates:YES
-                                                   initialConditions:initialConditions
-                                                    updateConditions:updateConditions];
-  if (![_modelManager registerRemoteModel:remoteModel]) {
-    NSLog(@"Failed to register AutoML remote model");
-  }
-
-  [NSNotificationCenter.defaultCenter addObserver:self
-                                         selector:@selector(remoteModelDownloadDidSucceed:) name:FIRModelDownloadDidSucceedNotification object:nil];
-  [NSNotificationCenter.defaultCenter addObserver:self
-                                         selector:@selector(remoteModelDownloadDidFail:) name:FIRModelDownloadDidFailNotification object:nil];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.downloadProgressView.hidden = NO;
-    self.downloadProgressView.observedProgress = [self.modelManager downloadRemoteModel:remoteModel];
-  });
-
-  NSString *localModelFilePath =
-  [[NSBundle mainBundle] pathForResource:FIRAutoMLLocalModelManifestFilename
-                                  ofType:FIRAutoMLManifestFileType];
-  FIRLocalModel *localModel = [[FIRLocalModel alloc] initWithName:FIRLocalAutoMLModelName
-                                                             path:localModelFilePath];
-  if (![_modelManager registerLocalModel:localModel]) {
-    NSLog(@"Failed to register AutoML local model");
-  }
-  self.areAutoMLModelsRegistered = YES;
 }
 
 #pragma mark - Notifications
@@ -328,45 +199,6 @@ typedef NS_ENUM(NSInteger, Detector) {
       [UIUtilities addRectangle:standardizedRect toView:self->_annotationOverlayView color:UIColor.greenColor];
     }
   });
-}
-
-- (void)recognizeTextOnDeviceInImage:(FIRVisionImage *)image width:(CGFloat)width height:(CGFloat)height {
-  FIRVisionTextRecognizer *textRecognizer = [_vision onDeviceTextRecognizer];
-  dispatch_group_t group = dispatch_group_create();
-  dispatch_group_enter(group);
-  [textRecognizer processImage:image completion:^(FIRVisionText * _Nullable text, NSError * _Nullable error) {
-    [self removeDetectionAnnotations];
-    [self updatePreviewOverlayView];
-    if (text == nil) {
-      NSLog(@"On-Device text recognizer error: %@", error ? error.localizedDescription : noResultsMessage);
-      dispatch_group_leave(group);
-      return;
-    }
-    // Blocks.
-    for (FIRVisionTextBlock *block in text.blocks) {
-      NSArray<NSValue *> *points = [self convertedPointsFromPoints:block.cornerPoints width:width height:height];
-      [UIUtilities addShapeWithPoints:points toView:self->_annotationOverlayView color:UIColor.purpleColor];
-
-      // Lines.
-      for (FIRVisionTextLine *line in block.lines) {
-        NSArray<NSValue *> *points = [self  convertedPointsFromPoints:line.cornerPoints width:width height:height];
-        [UIUtilities addShapeWithPoints:points toView:self->_annotationOverlayView color:UIColor.purpleColor];
-
-        // Elements.
-        for (FIRVisionTextElement *element in line.elements) {
-          CGRect normalizedRect = CGRectMake(element.frame.origin.x / width, element.frame.origin.y / height, element.frame.size.width / width, element.frame.size.height / height);
-          CGRect convertedRect = [self->_previewLayer rectForMetadataOutputRectOfInterest:normalizedRect];
-          [UIUtilities addRectangle:convertedRect toView:self->_annotationOverlayView color:UIColor.greenColor];
-          UILabel *label = [[UILabel alloc] initWithFrame:convertedRect];
-          label.text = element.text;
-          label.adjustsFontSizeToFitWidth = YES;
-          [self.annotationOverlayView addSubview:label];
-        }
-      }
-    }
-    dispatch_group_leave(group);
-  }];
-  dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 #pragma mark - Private
@@ -516,28 +348,6 @@ typedef NS_ENUM(NSInteger, Detector) {
   CGImageRelease(cgImage);
 }
 
-- (NSArray <NSValue *>*)convertedPointsFromPoints:(NSArray<NSValue *> *)points
-                                            width:(CGFloat)width
-                                           height:(CGFloat)height {
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity:points.count];
-  for (NSValue *point in points) {
-    CGPoint cgPointValue = point.CGPointValue;
-    CGPoint normalizedPoint = CGPointMake(cgPointValue.x / width, cgPointValue.y / height);
-    CGPoint cgPoint = [_previewLayer pointForCaptureDevicePointOfInterest:normalizedPoint];
-    [result addObject: [NSValue valueWithCGPoint:cgPoint]];
-  }
-  return result;
-}
-
-- (CGPoint)normalizedPointFromVisionPoint:(FIRVisionPoint *)point
-                                    width:(CGFloat)width
-                                   height:(CGFloat)height {
-  CGPoint cgPointValue = CGPointMake(point.x.floatValue, point.y.floatValue);
-  CGPoint normalizedPoint = CGPointMake(cgPointValue.x / width, cgPointValue.y / height);
-  CGPoint cgPoint = [_previewLayer pointForCaptureDevicePointOfInterest:normalizedPoint];
-  return cgPoint;
-}
-
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
@@ -571,24 +381,9 @@ typedef NS_ENUM(NSInteger, Detector) {
     }
 
     switch (_currentDetector) {
-      case DetectorOnDeviceAutoMLImageLabeler:
-        [self detectImageLabelsAutoMLOnDeviceInImage:visionImage width:imageWidth height: imageHeight];
-        break;
       case DetectorOnDeviceFace:
         [self detectFacesOnDeviceInImage:visionImage width:imageWidth height:imageHeight];
         break;
-      case DetectorOnDeviceText:
-        [self recognizeTextOnDeviceInImage:visionImage width:imageWidth height:imageHeight];
-        break;
-      case DetectorOnDeviceObjectProminentNoClassifier:
-      case DetectorOnDeviceObjectProminentWithClassifier:
-      case DetectorOnDeviceObjectMultipleNoClassifier:
-      case DetectorOnDeviceObjectMultipleWithClassifier: {
-        FIRVisionObjectDetectorOptions *options = [FIRVisionObjectDetectorOptions new];
-        options.shouldEnableClassification = shouldEnableClassification;
-        options.shouldEnableMultipleObjects = shouldEnableMultipleObjects;
-        break;
-      }
     }
   } else {
     NSLog(@"%@", @"Failed to get image buffer from sample buffer.");

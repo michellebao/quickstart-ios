@@ -106,107 +106,6 @@ class CameraViewController: UIViewController {
         setUpCaptureSessionInput()
     }
     
-    // MARK: - On-Device AutoML Detections
-    
-    //private func detectImageLabelsAutoMLOndevice(
-        //    in visionImage: VisionImage,
-        //    width: CGFloat,
-        //    height: CGFloat
-        //) {
-        //    registerAutoMLModelsIfNeeded()
-        //
-        //    let options = VisionOnDeviceAutoMLImageLabelerOptions(
-        //      remoteModelName: Constant.remoteAutoMLModelName,
-        //      localModelName: Constant.localAutoMLModelName
-        //    )
-        //    options.confidenceThreshold = Constant.labelConfidenceThreshold
-        //    let autoMLOnDeviceLabeler = vision.onDeviceAutoMLImageLabeler(options: options)
-        //    print("labeler: \(autoMLOnDeviceLabeler)\n")
-        //
-        //    let group = DispatchGroup()
-        //    group.enter()
-        //
-        //    autoMLOnDeviceLabeler.process(visionImage) { detectedLabels, error in
-        //      defer { group.leave() }
-        //
-        //      self.updatePreviewOverlayView()
-        //      self.removeDetectionAnnotations()
-        //
-        //      if let error = error {
-        //        print("Failed to detect labels with error: \(error.localizedDescription).")
-        //        return
-        //      }
-        //
-        //      guard let labels = detectedLabels, !labels.isEmpty else {
-        //        return
-        //      }
-        //
-        //      let annotationFrame = self.annotationOverlayView.frame
-        //      let resultsRect = CGRect(
-        //        x: annotationFrame.origin.x + Constant.padding,
-        //        y: annotationFrame.size.height - Constant.padding - Constant.resultsLabelHeight,
-        //        width: annotationFrame.width - 2 * Constant.padding,
-        //        height: Constant.resultsLabelHeight
-        //      )
-        //      let resultsLabel = UILabel(frame: resultsRect)
-        //      resultsLabel.textColor = .yellow
-        //      resultsLabel.text = labels.map { label -> String in
-        //        return "Label: \(label.text), Confidence: \(label.confidence ?? 0)"
-        //        }.joined(separator: "\n")
-        //      resultsLabel.adjustsFontSizeToFitWidth = true
-        //      resultsLabel.numberOfLines = Constant.resultsLabelLines
-        //      self.annotationOverlayView.addSubview(resultsLabel)
-        //    }
-        //
-        //    group.wait()
-    //}
-    
-    private func registerAutoMLModelsIfNeeded() {
-        //    if areAutoMLModelsRegistered {
-        //      return
-        //    }
-        //
-        //    let initialConditions = ModelDownloadConditions()
-        //    let updateConditions = ModelDownloadConditions(
-        //      allowsCellularAccess: false,
-        //      allowsBackgroundDownloading: true
-        //    )
-        //    let remoteModel = RemoteModel(
-        //      name: Constant.remoteAutoMLModelName,
-        //      allowsModelUpdates: true,
-        //      initialConditions: initialConditions,
-        //      updateConditions: updateConditions
-        //    )
-        //    modelManager.register(remoteModel)
-        //    NotificationCenter.default.addObserver(
-        //      self,
-        //      selector: #selector(remoteModelDownloadDidSucceed(_:)),
-        //      name: .firebaseMLModelDownloadDidSucceed,
-        //      object: nil
-        //    )
-        //    NotificationCenter.default.addObserver(
-        //      self,
-        //      selector: #selector(remoteModelDownloadDidFail(_:)),
-        //      name: .firebaseMLModelDownloadDidFail,
-        //      object: nil
-        //    )
-        //    DispatchQueue.main.async {
-        //      self.downloadProgressView.isHidden = false
-        //      self.downloadProgressView.observedProgress = self.modelManager.download(remoteModel)
-        //    }
-        //
-        //    guard let localModelFilePath = Bundle.main.path(
-        //      forResource: Constant.localModelManifestFileName,
-        //      ofType: Constant.autoMLManifestFileType
-        //      ) else {
-        //        print("Failed to find AutoML local model manifest file.")
-        //        return
-        //    }
-        //    let localModel = LocalModel(name: Constant.localAutoMLModelName, path: localModelFilePath)
-        //    modelManager.register(localModel)
-        //    areAutoMLModelsRegistered = true
-    }
-    
     // MARK: - Notifications
     
     @objc
@@ -383,61 +282,6 @@ class CameraViewController: UIViewController {
         }
     }
     
-    // NOT USED
-    private func recognizeTextOnDevice(in image: VisionImage, width: CGFloat, height: CGFloat) {
-        //    let textRecognizer = vision.onDeviceTextRecognizer()
-        //    textRecognizer.process(image) { text, error in
-        //      self.removeDetectionAnnotations()
-        //      self.updatePreviewOverlayView()
-        //      guard error == nil, let text = text else {
-        //        print("On-Device text recognizer error: " +
-        //          "\(error?.localizedDescription ?? Constant.noResultsMessage)")
-        //        return
-        //      }
-        //      // Blocks.
-        //      for block in text.blocks {
-        //        let points = self.convertedPoints(from: block.cornerPoints, width: width, height: height)
-        //        UIUtilities.addShape(
-        //          withPoints: points,
-        //          to: self.annotationOverlayView,
-        //          color: UIColor.purple
-        //        )
-        //
-        //        // Lines.
-        //        for line in block.lines {
-        //          let points = self.convertedPoints(from: line.cornerPoints, width: width, height: height)
-        //          UIUtilities.addShape(
-        //            withPoints: points,
-        //            to: self.annotationOverlayView,
-        //            color: UIColor.orange
-        //          )
-        //
-        //          // Elements.
-        //          for element in line.elements {
-        //            let normalizedRect = CGRect(
-        //              x: element.frame.origin.x / width,
-        //              y: element.frame.origin.y / height,
-        //              width: element.frame.size.width / width,
-        //              height: element.frame.size.height / height
-        //            )
-        //            let convertedRect = self.previewLayer.layerRectConverted(
-        //              fromMetadataOutputRect: normalizedRect
-        //            )
-        //            UIUtilities.addRectangle(
-        //              convertedRect,
-        //              to: self.annotationOverlayView,
-        //              color: UIColor.green
-        //            )
-        //            let label = UILabel(frame: convertedRect)
-        //            label.text = element.text
-        //            label.adjustsFontSizeToFitWidth = true
-        //            self.annotationOverlayView.addSubview(label)
-        //          }
-        //        }
-        //      }
-        //    }
-    }
-    
     // MARK: - Private
     
     private func setUpCaptureSessionOutput() {
@@ -584,31 +428,6 @@ class CameraViewController: UIViewController {
             previewOverlayView.image = rotatedImage
         }
     }
-    
-    //  private func convertedPoints(
-    //    from points: [NSValue]?,
-    //    width: CGFloat,
-    //    height: CGFloat
-    //  ) -> [NSValue]? {
-    //    return points?.map {
-    //      let cgPointValue = $0.cgPointValue
-    //      let normalizedPoint = CGPoint(x: cgPointValue.x / width, y: cgPointValue.y / height)
-    //      let cgPoint = previewLayer.layerPointConverted(fromCaptureDevicePoint: normalizedPoint)
-    //      let value = NSValue(cgPoint: cgPoint)
-    //      return value
-    //    }
-    //  }
-    //
-    //  private func normalizedPoint(
-    //    fromVisionPoint point: VisionPoint,
-    //    width: CGFloat,
-    //    height: CGFloat
-    //  ) -> CGPoint {
-    //    let cgPoint = CGPoint(x: CGFloat(point.x.floatValue), y: CGFloat(point.y.floatValue))
-    //    var normalizedPoint = CGPoint(x: cgPoint.x / width, y: cgPoint.y / height)
-    //    normalizedPoint = previewLayer.layerPointConverted(fromCaptureDevicePoint: normalizedPoint)
-    //    return normalizedPoint
-    //  }
 }
 
 // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -652,12 +471,8 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         //    }
         
         switch currentDetector {
-            //    case .onDeviceAutoMLImageLabeler:
-        //      detectImageLabelsAutoMLOndevice(in: visionImage, width: imageWidth, height: imageHeight)
         case .onDeviceFace:
             detectFacesOnDevice(in: visionImage, width: imageWidth, height: imageHeight)
-            //    case .onDeviceText:
-            //      recognizeTextOnDevice(in: visionImage, width: imageWidth, height: imageHeight)
             //    case .onDeviceObjectProminentNoClassifier, .onDeviceObjectProminentWithClassifier,
             //         .onDeviceObjectMultipleNoClassifier, .onDeviceObjectMultipleWithClassifier:
             //      let options = VisionObjectDetectorOptions()
