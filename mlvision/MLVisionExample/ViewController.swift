@@ -947,7 +947,7 @@ extension ViewController {
     /// Detects labels on the specified image using On-Device AutoML Image Labeling API.
     ///
     /// - Parameter image: The image.
-    func detectImageLabelsAutoML(image: UIImage?) {
+    //func detectImageLabelsAutoML(image: UIImage?) {
         //    guard let image = image else { return }
         //    registerAutoMLModelsIfNeeded()
         //
@@ -990,7 +990,7 @@ extension ViewController {
         //      // [END_EXCLUDE]
         //    }
         //    // [END detect_automl_label]
-    }
+    //}
     
     /// Detects text on the specified image and draws a frame around the recognized text using the
     /// On-Device text recognizer.
@@ -1243,22 +1243,22 @@ extension ViewController {
 // MARK: - Enums
 
 private enum DetectorPickerRow: Int {
-    case detectFaceOnDevice = 0,
-    detectTextOnDevice,
-    detectBarcodeOnDevice,
-    detectImageLabelsOnDevice,
-    detectImageLabelsAutoMLOnDevice,
-    detectObjectsProminentNoClassifier,
-    detectObjectsProminentWithClassifier,
-    detectObjectsMultipleNoClassifier,
-    detectObjectsMultipleWithClassifier,
-    detectTextInCloudSparse,
-    detectTextInCloudDense,
-    detectDocumentTextInCloud,
-    detectImageLabelsInCloud,
-    detectLandmarkInCloud
+    case detectFaceOnDevice = 0
+    //detectTextOnDevice,
+    //detectBarcodeOnDevice
+    //detectImageLabelsOnDevice,
+    //detectImageLabelsAutoMLOnDevice,
+//    detectObjectsProminentNoClassifier,
+//    detectObjectsProminentWithClassifier,
+//    detectObjectsMultipleNoClassifier,
+//    detectObjectsMultipleWithClassifier,
+//    detectTextInCloudSparse,
+//    detectTextInCloudDense,
+//    detectDocumentTextInCloud,
+//    detectImageLabelsInCloud,
+//    detectLandmarkInCloud
     
-    static let rowsCount = 14
+    static let rowsCount = 1
     static let componentsCount = 1
     
     public var description: String {
@@ -1310,10 +1310,10 @@ private enum Constants {
     static let sparseTextModelName = "Sparse"
     static let denseTextModelName = "Dense"
     
-    static let localAutoMLModelName = "local_automl_model"
-    static let remoteAutoMLModelName = "remote_automl_model"
-    static let localModelManifestFileName = "automl_labeler_manifest"
-    static let autoMLManifestFileType = "json"
+//    static let localAutoMLModelName = "local_automl_model"
+//    static let remoteAutoMLModelName = "remote_automl_model"
+//    static let localModelManifestFileName = "automl_labeler_manifest"
+//    static let autoMLManifestFileType = "json"
     
     static let labelConfidenceThreshold: Float = 0.75
     static let smallDotRadius: CGFloat = 5.0

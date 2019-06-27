@@ -108,11 +108,11 @@ class CameraViewController: UIViewController {
     
     // MARK: - On-Device AutoML Detections
     
-    private func detectImageLabelsAutoMLOndevice(
+    //private func detectImageLabelsAutoMLOndevice(
         //    in visionImage: VisionImage,
         //    width: CGFloat,
         //    height: CGFloat
-        ) {
+        //) {
         //    registerAutoMLModelsIfNeeded()
         //
         //    let options = VisionOnDeviceAutoMLImageLabelerOptions(
@@ -159,7 +159,7 @@ class CameraViewController: UIViewController {
         //    }
         //
         //    group.wait()
-    }
+    //}
     
     private func registerAutoMLModelsIfNeeded() {
         //    if areAutoMLModelsRegistered {
@@ -906,10 +906,10 @@ private enum Constant {
     static let videoDataOutputQueueLabel = "com.google.firebaseml.visiondetector.VideoDataOutputQueue"
     static let sessionQueueLabel = "com.google.firebaseml.visiondetector.SessionQueue"
     static let noResultsMessage = "No Results"
-    static let localAutoMLModelName = "local_automl_model"
-    static let remoteAutoMLModelName = "remote_automl_model"
-    static let localModelManifestFileName = "automl_labeler_manifest"
-    static let autoMLManifestFileType = "json"
+//    static let localAutoMLModelName = "local_automl_model"
+//    static let remoteAutoMLModelName = "remote_automl_model"
+//    static let localModelManifestFileName = "automl_labeler_manifest"
+//    static let autoMLManifestFileType = "json"
     static let labelConfidenceThreshold: Float = 0.75
     static let smallDotRadius: CGFloat = 4.0
     static let originalScale: CGFloat = 1.0

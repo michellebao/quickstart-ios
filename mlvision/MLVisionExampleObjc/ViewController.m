@@ -63,31 +63,31 @@ typedef NS_ENUM(NSInteger, DetectorPickerRow) {
   /** On-Device vision face vision detector. */
   DetectorPickerRowDetectFaceOnDevice,
   /** On-Device vision text vision detector. */
-  DetectorPickerRowDetectTextOnDevice,
+  //DetectorPickerRowDetectTextOnDevice,
   /** On-Device vision barcode vision detector. */
-  DetectorPickerRowDetectBarcodeOnDevice,
+  //DetectorPickerRowDetectBarcodeOnDevice,
   /** On-Device vision image label detector. */
-  DetectorPickerRowDetectImageLabelsOnDevice,
+  //DetectorPickerRowDetectImageLabelsOnDevice,
   /** On-Device vision AutoML image label detector. */
-  DetectorPickerRowDetectImageLabelsAutoMLOnDevice,
+  //DetectorPickerRowDetectImageLabelsAutoMLOnDevice,
   /** On-Device vision object detector, prominent, only tracking. */
-  DetectorPickerRowDetectObjectsProminentNoClassifier,
+  //DetectorPickerRowDetectObjectsProminentNoClassifier,
   /** On-Device vision object detector, prominent, with classification. */
-  DetectorPickerRowDetectObjectsProminentWithClassifier,
+  //DetectorPickerRowDetectObjectsProminentWithClassifier,
   /** On-Device vision object detector, multiple, only tracking. */
-  DetectorPickerRowDetectObjectsMultipleNoClassifier,
+  //DetectorPickerRowDetectObjectsMultipleNoClassifier,
   /** On-Device vision object detector, multiple, with classification. */
-  DetectorPickerRowDetectObjectsMultipleWithClassifier,
+  //DetectorPickerRowDetectObjectsMultipleWithClassifier,
   /** Cloud vision text vision detector (Sparse). */
-  DetectorPickerRowDetectTextInCloudSparse,
+  //DetectorPickerRowDetectTextInCloudSparse,
   /** Cloud vision text vision detector (Dense). */
-  DetectorPickerRowDetectTextInCloudDense,
+  //DetectorPickerRowDetectTextInCloudDense,
   /** Cloud vision document text vision detector. */
-  DetectorPickerRowDetectDocumentTextInCloud,
+  //DetectorPickerRowDetectDocumentTextInCloud,
   /** Cloud vision label vision detector. */
-  DetectorPickerRowDetectImageLabelsInCloud,
+  //DetectorPickerRowDetectImageLabelsInCloud,
   /** Cloud vision landmark vision detector. */
-  DetectorPickerRowDetectLandmarkInCloud
+  //DetectorPickerRowDetectLandmarkInCloud
 };
 
 @interface ViewController () <UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate>
@@ -127,32 +127,32 @@ typedef NS_ENUM(NSInteger, DetectorPickerRow) {
   switch (detectorPickerRow) {
     case DetectorPickerRowDetectFaceOnDevice:
       return @"Face On-Device";
-    case DetectorPickerRowDetectTextOnDevice:
-      return @"Text On-Device";
-    case DetectorPickerRowDetectBarcodeOnDevice:
-      return @"Barcode On-Device";
-    case DetectorPickerRowDetectImageLabelsOnDevice:
-      return @"Image Labeling On-Device";
-    case DetectorPickerRowDetectImageLabelsAutoMLOnDevice:
-      return @"AutoML Image Labeling On-Device";
-    case DetectorPickerRowDetectObjectsProminentNoClassifier:
-      return @"ODT, prominent, only tracking";
-    case DetectorPickerRowDetectObjectsProminentWithClassifier:
-      return @"ODT, prominent, with classification";
-    case DetectorPickerRowDetectObjectsMultipleNoClassifier:
-      return @"ODT, multiple, only tracking";
-    case DetectorPickerRowDetectObjectsMultipleWithClassifier:
-      return @"ODT, multiple, with classification";
-    case DetectorPickerRowDetectTextInCloudSparse:
-      return @"Text in Cloud (Sparse)";
-    case DetectorPickerRowDetectTextInCloudDense:
-      return @"Text in Cloud (Dense)";
-    case DetectorPickerRowDetectDocumentTextInCloud:
-      return @"Document Text in Cloud";
-    case DetectorPickerRowDetectImageLabelsInCloud:
-      return @"Image Labeling in Cloud";
-    case DetectorPickerRowDetectLandmarkInCloud:
-      return @"Landmarks in Cloud";
+//    case DetectorPickerRowDetectTextOnDevice:
+//      return @"Text On-Device";
+//    case DetectorPickerRowDetectBarcodeOnDevice:
+//      return @"Barcode On-Device";
+    //case DetectorPickerRowDetectImageLabelsOnDevice:
+    //  return @"Image Labeling On-Device";
+    //case DetectorPickerRowDetectImageLabelsAutoMLOnDevice:
+    //  return @"AutoML Image Labeling On-Device";
+//    case DetectorPickerRowDetectObjectsProminentNoClassifier:
+//      return @"ODT, prominent, only tracking";
+//    case DetectorPickerRowDetectObjectsProminentWithClassifier:
+//      return @"ODT, prominent, with classification";
+//    case DetectorPickerRowDetectObjectsMultipleNoClassifier:
+//      return @"ODT, multiple, only tracking";
+//    case DetectorPickerRowDetectObjectsMultipleWithClassifier:
+//      return @"ODT, multiple, with classification";
+//    case DetectorPickerRowDetectTextInCloudSparse:
+//      return @"Text in Cloud (Sparse)";
+//    case DetectorPickerRowDetectTextInCloudDense:
+//      return @"Text in Cloud (Dense)";
+//    case DetectorPickerRowDetectDocumentTextInCloud:
+//      return @"Document Text in Cloud";
+//    case DetectorPickerRowDetectImageLabelsInCloud:
+//      return @"Image Labeling in Cloud";
+//    case DetectorPickerRowDetectLandmarkInCloud:
+//      return @"Landmarks in Cloud";
   }
 }
 
@@ -221,51 +221,51 @@ typedef NS_ENUM(NSInteger, DetectorPickerRow) {
     case DetectorPickerRowDetectFaceOnDevice:
       [self detectFacesInImage:_imageView.image];
       break;
-    case DetectorPickerRowDetectTextOnDevice:
-      [self detectTextOnDeviceInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectBarcodeOnDevice:
-      [self detectBarcodesInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectImageLabelsOnDevice:
-      [self detectLabelsInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectImageLabelsAutoMLOnDevice:
-      [self detectImageLabelsAutoMLInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectObjectsProminentNoClassifier:
-    case DetectorPickerRowDetectObjectsProminentWithClassifier:
-    case DetectorPickerRowDetectObjectsMultipleNoClassifier:
-    case DetectorPickerRowDetectObjectsMultipleWithClassifier: {
-      BOOL shouldEnableClassification = (rowIndex == DetectorPickerRowDetectObjectsProminentWithClassifier) ||
-      (rowIndex == DetectorPickerRowDetectObjectsMultipleWithClassifier);
-      BOOL shouldEnableMultipleObjects = (rowIndex == DetectorPickerRowDetectObjectsMultipleNoClassifier) ||
-      (rowIndex == DetectorPickerRowDetectObjectsMultipleWithClassifier);
-      FIRVisionObjectDetectorOptions *options = [FIRVisionObjectDetectorOptions new];
-      options.shouldEnableClassification = shouldEnableClassification;
-      options.shouldEnableMultipleObjects = shouldEnableMultipleObjects;
-      options.detectorMode = FIRVisionObjectDetectorModeSingleImage;
-      [self detectObjectsOnDeviceInImage:_imageView.image withOptions:options];
-      break;
-    }
-    case DetectorPickerRowDetectTextInCloudSparse:
-      [self detectTextInCloudInImage:_imageView.image withOptions:nil];
-      break;
-    case DetectorPickerRowDetectTextInCloudDense: {
-      FIRVisionCloudTextRecognizerOptions *options = [FIRVisionCloudTextRecognizerOptions new];
-      options.modelType = FIRVisionCloudTextModelTypeDense;
-      [self detectTextInCloudInImage:_imageView.image withOptions:options];
-      break;
-    }
-    case DetectorPickerRowDetectDocumentTextInCloud:
-      [self detectDocumentTextInCloudInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectImageLabelsInCloud:
-      [self detectCloudLabelsInImage:_imageView.image];
-      break;
-    case DetectorPickerRowDetectLandmarkInCloud:
-      [self detectCloudLandmarksInImage:_imageView.image];
-      break;
+//    case DetectorPickerRowDetectTextOnDevice:
+//      [self detectTextOnDeviceInImage:_imageView.image];
+//      break;
+//    case DetectorPickerRowDetectBarcodeOnDevice:
+//      [self detectBarcodesInImage:_imageView.image];
+//      break;
+//    case DetectorPickerRowDetectImageLabelsOnDevice:
+//      [self detectLabelsInImage:_imageView.image];
+//      break;
+    //case DetectorPickerRowDetectImageLabelsAutoMLOnDevice:
+    //  [self detectImageLabelsAutoMLInImage:_imageView.image];
+    //  break;
+//    case DetectorPickerRowDetectObjectsProminentNoClassifier:
+//    case DetectorPickerRowDetectObjectsProminentWithClassifier:
+//    case DetectorPickerRowDetectObjectsMultipleNoClassifier:
+//    case DetectorPickerRowDetectObjectsMultipleWithClassifier: {
+//      BOOL shouldEnableClassification = (rowIndex == DetectorPickerRowDetectObjectsProminentWithClassifier) ||
+//      (rowIndex == DetectorPickerRowDetectObjectsMultipleWithClassifier);
+//      BOOL shouldEnableMultipleObjects = (rowIndex == DetectorPickerRowDetectObjectsMultipleNoClassifier) ||
+//      (rowIndex == DetectorPickerRowDetectObjectsMultipleWithClassifier);
+//      FIRVisionObjectDetectorOptions *options = [FIRVisionObjectDetectorOptions new];
+//      options.shouldEnableClassification = shouldEnableClassification;
+//      options.shouldEnableMultipleObjects = shouldEnableMultipleObjects;
+//      options.detectorMode = FIRVisionObjectDetectorModeSingleImage;
+//      [self detectObjectsOnDeviceInImage:_imageView.image withOptions:options];
+//      break;
+//    }
+//    case DetectorPickerRowDetectTextInCloudSparse:
+//      [self detectTextInCloudInImage:_imageView.image withOptions:nil];
+//      break;
+//    case DetectorPickerRowDetectTextInCloudDense: {
+//      FIRVisionCloudTextRecognizerOptions *options = [FIRVisionCloudTextRecognizerOptions new];
+//      options.modelType = FIRVisionCloudTextModelTypeDense;
+//      [self detectTextInCloudInImage:_imageView.image withOptions:options];
+//      break;
+//    }
+//    case DetectorPickerRowDetectDocumentTextInCloud:
+//      [self detectDocumentTextInCloudInImage:_imageView.image];
+//      break;
+//    case DetectorPickerRowDetectImageLabelsInCloud:
+//      [self detectCloudLabelsInImage:_imageView.image];
+//      break;
+//    case DetectorPickerRowDetectLandmarkInCloud:
+//      [self detectCloudLandmarksInImage:_imageView.image];
+//      break;
   }
 }
 
