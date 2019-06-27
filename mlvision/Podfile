@@ -17,4 +17,3 @@ end
 
 target 'MLVisionExampleObjc' do
 end
-
