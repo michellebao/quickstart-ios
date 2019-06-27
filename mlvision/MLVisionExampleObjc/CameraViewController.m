@@ -326,7 +326,6 @@ typedef NS_ENUM(NSInteger, Detector) {
       CGRect normalizedRect = CGRectMake(face.frame.origin.x / width, face.frame.origin.y / height, face.frame.size.width / width, face.frame.size.height / height);
       CGRect standardizedRect = CGRectStandardize([self->_previewLayer rectForMetadataOutputRectOfInterest:normalizedRect]);
       [UIUtilities addRectangle:standardizedRect toView:self->_annotationOverlayView color:UIColor.greenColor];
-      [self addContoursForFace:face width:width height:height];
     }
   });
 }
@@ -368,58 +367,6 @@ typedef NS_ENUM(NSInteger, Detector) {
     dispatch_group_leave(group);
   }];
   dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-}
-
-#pragma mark - Object Detection
-
-- (void)detectObjectsOnDeviceInImage:(FIRVisionImage *)image
-                               width:(CGFloat)width
-                              height:(CGFloat)height
-                             options:(FIRVisionObjectDetectorOptions *)options {
-  FIRVisionObjectDetector *detector = [_vision objectDetectorWithOptions:options];
-
-  NSError *error;
-  NSArray *objects = [detector resultsInImage:image error:&error];
-  if (error != nil) {
-    NSLog(@"Failed to detect object with error: %@", error.localizedDescription);
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      [self updatePreviewOverlayView];
-      [self removeDetectionAnnotations];
-    });
-    return;
-  }
-
-  if (!objects || objects.count == 0) {
-    NSLog(@"On-Device object detector returned no results.");
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      [self updatePreviewOverlayView];
-      [self removeDetectionAnnotations];
-    });
-    return;
-  }
-
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [self updatePreviewOverlayView];
-    [self removeDetectionAnnotations];
-    for (FIRVisionObject *object in objects) {
-      CGRect normalizedRect = CGRectMake(object.frame.origin.x / width, object.frame.origin.y / height, object.frame.size.width / width, object.frame.size.height / height);
-      CGRect standardizedRect = CGRectStandardize([self.previewLayer rectForMetadataOutputRectOfInterest:normalizedRect]);
-      [UIUtilities addRectangle:standardizedRect toView:self.annotationOverlayView color:UIColor.greenColor];
-      UILabel *label = [[UILabel alloc] initWithFrame:standardizedRect];
-      label.numberOfLines = 2;
-      NSMutableString *description = [NSMutableString new];
-      if (object.trackingID != nil) {
-        [description appendFormat:@"ID: %@\n", object.trackingID];
-      }
-      if (object.label != nil) {
-        [description appendString:object.label];
-      }
-      label.text = description;
-
-      label.adjustsFontSizeToFitWidth = YES;
-      [self.annotationOverlayView addSubview:label];
-    }
-  });
 }
 
 #pragma mark - Private
@@ -591,144 +538,6 @@ typedef NS_ENUM(NSInteger, Detector) {
   return cgPoint;
 }
 
-- (void)addContoursForFace:(FIRVisionFace *)face
-                     width:(CGFloat)width
-                    height:(CGFloat)height {
-  // Face
-  FIRVisionFaceContour *faceContour = [face contourOfType:FIRFaceContourTypeFace];
-  for (FIRVisionPoint *point in faceContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.blueColor
-                           radius:FIRSmallDotRadius];
-  }
-
-  // Eyebrows
-  FIRVisionFaceContour *leftEyebrowTopContour =
-  [face contourOfType:FIRFaceContourTypeLeftEyebrowTop];
-  for (FIRVisionPoint *point in leftEyebrowTopContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.orangeColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *leftEyebrowBottomContour =
-  [face contourOfType:FIRFaceContourTypeLeftEyebrowBottom];
-  for (FIRVisionPoint *point in leftEyebrowBottomContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.orangeColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *rightEyebrowTopContour =
-  [face contourOfType:FIRFaceContourTypeRightEyebrowTop];
-  for (FIRVisionPoint *point in rightEyebrowTopContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.orangeColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *rightEyebrowBottomContour =
-  [face contourOfType:FIRFaceContourTypeRightEyebrowBottom];
-  for (FIRVisionPoint *point in rightEyebrowBottomContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.orangeColor
-                           radius:FIRSmallDotRadius];
-  }
-
-  // Eyes
-  FIRVisionFaceContour *leftEyeContour = [face contourOfType:FIRFaceContourTypeLeftEye];
-  for (FIRVisionPoint *point in leftEyeContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.cyanColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *rightEyeContour = [face contourOfType:FIRFaceContourTypeRightEye];
-  for (FIRVisionPoint *point in rightEyeContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.cyanColor
-                           radius:FIRSmallDotRadius];
-  }
-
-  // Lips
-  FIRVisionFaceContour *upperLipTopContour = [face contourOfType:FIRFaceContourTypeUpperLipTop];
-  for (FIRVisionPoint *point in upperLipTopContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.redColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *upperLipBottomContour =
-  [face contourOfType:FIRFaceContourTypeUpperLipBottom];
-  for (FIRVisionPoint *point in upperLipBottomContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.redColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *lowerLipTopContour = [face contourOfType:FIRFaceContourTypeLowerLipTop];
-  for (FIRVisionPoint *point in lowerLipTopContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.redColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *lowerLipBottomContour =
-  [face contourOfType:FIRFaceContourTypeLowerLipBottom];
-  for (FIRVisionPoint *point in lowerLipBottomContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.redColor
-                           radius:FIRSmallDotRadius];
-  }
-
-  // Nose
-  FIRVisionFaceContour *noseBridgeContour = [face contourOfType:FIRFaceContourTypeNoseBridge];
-  for (FIRVisionPoint *point in noseBridgeContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.yellowColor
-                           radius:FIRSmallDotRadius];
-  }
-  FIRVisionFaceContour *noseBottomContour = [face contourOfType:FIRFaceContourTypeNoseBottom];
-  for (FIRVisionPoint *point in noseBottomContour.points) {
-    CGPoint cgPoint =
-    [self normalizedPointFromVisionPoint:point width:width height:height];
-    [UIUtilities addCircleAtPoint:cgPoint
-                           toView:self->_annotationOverlayView
-                            color:UIColor.yellowColor
-                           radius:FIRSmallDotRadius];
-  }
-}
-
-
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
@@ -778,10 +587,6 @@ typedef NS_ENUM(NSInteger, Detector) {
         FIRVisionObjectDetectorOptions *options = [FIRVisionObjectDetectorOptions new];
         options.shouldEnableClassification = shouldEnableClassification;
         options.shouldEnableMultipleObjects = shouldEnableMultipleObjects;
-        [self detectObjectsOnDeviceInImage:visionImage
-                                     width:imageWidth
-                                    height:imageHeight
-                                   options:options];
         break;
       }
     }

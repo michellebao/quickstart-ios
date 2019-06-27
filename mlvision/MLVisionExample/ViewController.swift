@@ -121,37 +121,6 @@ class ViewController:  UIViewController, UINavigationControllerDelegate {
             case .detectFaceOnDevice:
                 detectFaces(image: imageView.image)
             default: break
-                //      case .detectTextOnDevice:
-                //        detectTextOnDevice(image: imageView.image)
-                //      case .detectBarcodeOnDevice:
-                //        detectBarcodes(image: imageView.image)
-                //      case .detectImageLabelsOnDevice:
-                //        detectLabels(image: imageView.image)
-                //      case .detectImageLabelsAutoMLOnDevice:
-                //        detectImageLabelsAutoML(image: imageView.image)
-                //      case .detectObjectsProminentNoClassifier, .detectObjectsProminentWithClassifier,
-                //           .detectObjectsMultipleNoClassifier, .detectObjectsMultipleWithClassifier:
-                //        let shouldEnableClassification = (rowIndex == .detectObjectsProminentWithClassifier) ||
-                //          (rowIndex == .detectObjectsMultipleWithClassifier)
-                //        let shouldEnableMultipleObjects = (rowIndex == .detectObjectsMultipleWithClassifier) ||
-                //          (rowIndex == .detectObjectsMultipleNoClassifier)
-                //        let options = VisionObjectDetectorOptions()
-                //        options.shouldEnableClassification = shouldEnableClassification
-                //        options.shouldEnableMultipleObjects = shouldEnableMultipleObjects
-                //        options.detectorMode = .singleImage
-                //        detectObjectsOnDevice(in: imageView.image, options: options)
-                //      case .detectTextInCloudSparse:
-                //        detectTextInCloud(image: imageView.image)
-                //      case .detectTextInCloudDense:
-                //        let options = VisionCloudTextRecognizerOptions()
-                //        options.modelType = .dense
-                //        detectTextInCloud(image: imageView.image, options: options)
-                //      case .detectDocumentTextInCloud:
-                //        detectDocumentTextInCloud(image: imageView.image)
-                //      case .detectImageLabelsInCloud:
-                //        detectCloudLabels(image: imageView.image)
-                //      case .detectLandmarkInCloud:
-                //        detectCloudLandmarks(image: imageView.image)
             }
         } else {
             print("No such item at row \(row) in detector picker.")
@@ -265,160 +234,6 @@ class ViewController:  UIViewController, UINavigationControllerDelegate {
     
     private func pointFrom(_ visionPoint: VisionPoint) -> CGPoint {
         return CGPoint(x: CGFloat(visionPoint.x.floatValue), y: CGFloat(visionPoint.y.floatValue))
-    }
-    
-    private func addContours(forFace face: VisionFace, transform: CGAffineTransform) {
-        //    // Face
-        //    if let faceContour = face.contour(ofType: .face) {
-        //      for point in faceContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Eyebrows
-        //    if let topLeftEyebrowContour = face.contour(ofType: .leftEyebrowTop) {
-        //      for point in topLeftEyebrowContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomLeftEyebrowContour = face.contour(ofType: .leftEyebrowBottom) {
-        //      for point in bottomLeftEyebrowContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let topRightEyebrowContour = face.contour(ofType: .rightEyebrowTop) {
-        //      for point in topRightEyebrowContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomRightEyebrowContour = face.contour(ofType: .rightEyebrowBottom) {
-        //      for point in bottomRightEyebrowContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Eyes
-        //    if let leftEyeContour = face.contour(ofType: .leftEye) {
-        //      for point in leftEyeContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius                )
-        //      }
-        //    }
-        //    if let rightEyeContour = face.contour(ofType: .rightEye) {
-        //      for point in rightEyeContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Lips
-        //    if let topUpperLipContour = face.contour(ofType: .upperLipTop) {
-        //      for point in topUpperLipContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomUpperLipContour = face.contour(ofType: .upperLipBottom) {
-        //      for point in bottomUpperLipContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let topLowerLipContour = face.contour(ofType: .lowerLipTop) {
-        //      for point in topLowerLipContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomLowerLipContour = face.contour(ofType: .lowerLipBottom) {
-        //      for point in bottomLowerLipContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Nose
-        //    if let noseBridgeContour = face.contour(ofType: .noseBridge) {
-        //      for point in noseBridgeContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let noseBottomContour = face.contour(ofType: .noseBottom) {
-        //      for point in noseBottomContour.points {
-        //        let transformedPoint = pointFrom(point).applying(transform);
-        //        UIUtilities.addCircle(
-        //          atPoint: transformedPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constants.smallDotRadius
-        //        )
-        //      }
-        //    }
     }
     
     private func addLandmarks(forFace face: VisionFace, transform: CGAffineTransform) {
@@ -810,15 +625,14 @@ extension ViewController {
             // Faces detected
             // [START_EXCLUDE]
             faces.forEach { face in
-                let transform = self.transformMatrix()
-                let transformedRect = face.frame.applying(transform)
-                UIUtilities.addRectangle(
-                    transformedRect,
-                    to: self.annotationOverlayView,
-                    color: UIColor.green
-                )
-                self.addLandmarks(forFace: face, transform: transform)
-                self.addContours(forFace: face, transform: transform)
+//                let transform = self.transformMatrix()
+//                let transformedRect = face.frame.applying(transform)
+//                UIUtilities.addRectangle(
+//                    transformedRect,
+//                    to: self.annotationOverlayView,
+//                    color: UIColor.green
+//                )
+                //self.addLandmarks(forFace: face, transform: transform)
             }
             self.resultsText = faces.map { face in
                 let headEulerAngleY = face.hasHeadEulerAngleY ? face.headEulerAngleY.description : "NA"
@@ -1182,62 +996,6 @@ extension ViewController {
     ///
     /// - Parameter image: The image.
     /// - Parameter options: The options for object detector.
-    private func detectObjectsOnDevice(in image: UIImage?, options: VisionObjectDetectorOptions) {
-        //    guard let image = image else { return }
-        //
-        //    // Define the metadata for the image.
-        //    let imageMetadata = VisionImageMetadata()
-        //    imageMetadata.orientation = UIUtilities.visionImageOrientation(from: image.imageOrientation)
-        //
-        //    // Initialize a VisionImage object with the given UIImage.
-        //    let visionImage = VisionImage(image: image)
-        //    visionImage.metadata = imageMetadata
-        //
-        //    // [START init_object_detector]
-        //    // Create an objects detector with options.
-        //    let detector = vision.objectDetector(options: options)
-        //    // [END init_object_detector]
-        //
-        //    // [START detect_object]
-        //    detector.process(visionImage) { objects, error in
-        //      guard error == nil else {
-        //        // [START_EXCLUDE]
-        //        let errorString = error?.localizedDescription ?? Constants.detectionNoResultsMessage
-        //        self.resultsText = "Object detection failed with error: \(errorString)"
-        //        self.showResults()
-        //        // [END_EXCLUDE]
-        //        return
-        //      }
-        //      guard let objects = objects, !objects.isEmpty else {
-        //        // [START_EXCLUDE]
-        //        self.resultsText = "On-Device object detector returned no results."
-        //        self.showResults()
-        //        // [END_EXCLUDE]
-        //        return
-        //      }
-        //
-        //      objects.forEach { object in
-        //        // [START_EXCLUDE]
-        //        let transform = self.transformMatrix()
-        //        let transformedRect = object.frame.applying(transform)
-        //        UIUtilities.addRectangle(
-        //          transformedRect,
-        //          to: self.annotationOverlayView,
-        //          color: .green
-        //        )
-        //        // [END_EXCLUDE]
-        //      }
-        //
-        //       // [START_EXCLUDE]
-        //      self.resultsText = objects.map { object in
-        //        return "Class: \(object.label ?? ""), frame: \(object.frame), ID: \(object.trackingID ?? 0)"
-        //        }.joined(separator: "\n")
-        //      self.showResults()
-        //      // [END_EXCLUDE]
-        //    }
-        //    // [END detect_object]
-        //  }
-    }
 }
 
 // MARK: - Enums

@@ -338,7 +338,6 @@ class CameraViewController: UIViewController {
                 //          to: self.annotationOverlayView,
                 //          color: UIColor.green
                 //        )
-                //        self.addContours(for: face, width: width, height: height)
                 
                 if face.hasSmilingProbability {
                     let smileProb = face.smilingProbability
@@ -435,65 +434,6 @@ class CameraViewController: UIViewController {
         //            self.annotationOverlayView.addSubview(label)
         //          }
         //        }
-        //      }
-        //    }
-    }
-    
-    // MARK: Object Detection
-    
-    // NOT USED
-    private func detectObjectsOnDevice(in image: VisionImage,
-                                       width: CGFloat,
-                                       height: CGFloat,
-                                       options: VisionObjectDetectorOptions) {
-        //    let detector = vision.objectDetector(options: options)
-        //
-        //    var detectedObjects: [VisionObject]? = nil
-        //    do {
-        //      detectedObjects = try detector.results(in: image)
-        //    } catch let error {
-        //      print("Failed to detect object with error: \(error.localizedDescription).")
-        //      return
-        //    }
-        //    guard let objects = detectedObjects, !objects.isEmpty else {
-        //      print("On-Device object detector returned no results.")
-        //      DispatchQueue.main.sync {
-        //        self.updatePreviewOverlayView()
-        //        self.removeDetectionAnnotations()
-        //      }
-        //      return
-        //    }
-        //
-        //    DispatchQueue.main.sync {
-        //      self.updatePreviewOverlayView()
-        //      self.removeDetectionAnnotations()
-        //      for object in objects {
-        //        let normalizedRect = CGRect(
-        //          x: object.frame.origin.x / width,
-        //          y: object.frame.origin.y / height,
-        //          width: object.frame.size.width / width,
-        //          height: object.frame.size.height / height
-        //        )
-        //        let standardizedRect =
-        //          self.previewLayer.layerRectConverted(fromMetadataOutputRect: normalizedRect).standardized
-        //        UIUtilities.addRectangle(
-        //          standardizedRect,
-        //          to: self.annotationOverlayView,
-        //          color: UIColor.green
-        //        )
-        //        let label = UILabel(frame: standardizedRect)
-        //        label.numberOfLines = 2
-        //        var description = ""
-        //        if let trackingID = object.trackingID {
-        //          description = "ID:" + trackingID.stringValue + "\n"
-        //        }
-        //        if let objectLabel = object.label {
-        //          description += objectLabel
-        //        }
-        //        label.text = description
-        //
-        //        label.adjustsFontSizeToFitWidth = true
-        //        self.annotationOverlayView.addSubview(label)
         //      }
         //    }
     }
@@ -669,161 +609,6 @@ class CameraViewController: UIViewController {
     //    normalizedPoint = previewLayer.layerPointConverted(fromCaptureDevicePoint: normalizedPoint)
     //    return normalizedPoint
     //  }
-    
-    private func addContours(for face: VisionFace, width: CGFloat, height: CGFloat) {
-        // Face
-        //    if let faceContour = face.contour(ofType: .face) {
-        //      for point in faceContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.blue,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Eyebrows
-        //    if let topLeftEyebrowContour = face.contour(ofType: .leftEyebrowTop) {
-        //      for point in topLeftEyebrowContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.orange,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomLeftEyebrowContour = face.contour(ofType: .leftEyebrowBottom) {
-        //      for point in bottomLeftEyebrowContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.orange,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let topRightEyebrowContour = face.contour(ofType: .rightEyebrowTop) {
-        //      for point in topRightEyebrowContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.orange,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomRightEyebrowContour = face.contour(ofType: .rightEyebrowBottom) {
-        //      for point in bottomRightEyebrowContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.orange,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Eyes
-        //    if let leftEyeContour = face.contour(ofType: .leftEye) {
-        //      for point in leftEyeContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.cyan,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let rightEyeContour = face.contour(ofType: .rightEye) {
-        //      for point in rightEyeContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.cyan,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Lips
-        //    if let topUpperLipContour = face.contour(ofType: .upperLipTop) {
-        //      for point in topUpperLipContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.red,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomUpperLipContour = face.contour(ofType: .upperLipBottom) {
-        //      for point in bottomUpperLipContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.red,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let topLowerLipContour = face.contour(ofType: .lowerLipTop) {
-        //      for point in topLowerLipContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.red,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let bottomLowerLipContour = face.contour(ofType: .lowerLipBottom) {
-        //      for point in bottomLowerLipContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.red,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //
-        //    // Nose
-        //    if let noseBridgeContour = face.contour(ofType: .noseBridge) {
-        //      for point in noseBridgeContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-        //    if let noseBottomContour = face.contour(ofType: .noseBottom) {
-        //      for point in noseBottomContour.points {
-        //        let cgPoint = normalizedPoint(fromVisionPoint: point, width: width, height: height)
-        //        UIUtilities.addCircle(
-        //          atPoint: cgPoint,
-        //          to: annotationOverlayView,
-        //          color: UIColor.yellow,
-        //          radius: Constant.smallDotRadius
-        //        )
-        //      }
-        //    }
-    }
 }
 
 // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -879,10 +664,6 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             //      options.shouldEnableClassification = shouldEnableClassification
             //      options.shouldEnableMultipleObjects = shouldEnableMultipleObjects
             //      options.detectorMode = .stream
-            //      detectObjectsOnDevice(in: visionImage,
-            //                            width: imageWidth,
-            //                            height: imageHeight,
-        //                            options: options)
         }
     }
 }
