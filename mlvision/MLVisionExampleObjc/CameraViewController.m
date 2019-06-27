@@ -363,22 +363,22 @@ typedef NS_ENUM(NSInteger, Detector) {
     visionImage.metadata = metadata;
     CGFloat imageWidth = CVPixelBufferGetWidth(imageBuffer);
     CGFloat imageHeight = CVPixelBufferGetHeight(imageBuffer);
-    BOOL shouldEnableClassification = NO;
-    BOOL shouldEnableMultipleObjects = NO;
-    switch (_currentDetector) {
-      case DetectorOnDeviceObjectProminentWithClassifier:
-      case DetectorOnDeviceObjectMultipleWithClassifier:
-      shouldEnableClassification = YES;
-    default:
-      break;
-    }
-    switch (_currentDetector) {
-      case DetectorOnDeviceObjectMultipleNoClassifier:
-      case DetectorOnDeviceObjectMultipleWithClassifier:
-      shouldEnableMultipleObjects = YES;
-    default:
-      break;
-    }
+//    BOOL shouldEnableClassification = NO;
+//    BOOL shouldEnableMultipleObjects = NO;
+//    switch (_currentDetector) {
+//      case DetectorOnDeviceObjectProminentWithClassifier:
+//      case DetectorOnDeviceObjectMultipleWithClassifier:
+//      shouldEnableClassification = YES;
+//    default:
+//      break;
+//    }
+//    switch (_currentDetector) {
+//      case DetectorOnDeviceObjectMultipleNoClassifier:
+//      case DetectorOnDeviceObjectMultipleWithClassifier:
+//      shouldEnableMultipleObjects = YES;
+//    default:
+//      break;
+//    }
 
     switch (_currentDetector) {
       case DetectorOnDeviceFace:

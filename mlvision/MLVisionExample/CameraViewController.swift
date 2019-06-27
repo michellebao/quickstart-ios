@@ -224,20 +224,6 @@ class CameraViewController: UIViewController {
             self.updatePreviewOverlayView()
             self.removeDetectionAnnotations()
             for face in faces {
-                //        let normalizedRect = CGRect(
-                //          x: face.frame.origin.x / width,
-                //          y: face.frame.origin.y / height,
-                //          width: face.frame.size.width / width,
-                //          height: face.frame.size.height / height
-                //        )
-                //        let standardizedRect =
-                //          self.previewLayer.layerRectConverted(fromMetadataOutputRect: normalizedRect).standardized
-                //        UIUtilities.addRectangle(
-                //          standardizedRect,
-                //          to: self.annotationOverlayView,
-                //          color: UIColor.green
-                //        )
-                
                 if face.hasSmilingProbability {
                     let smileProb = face.smilingProbability
                     if smileProb > 0.6 {
@@ -455,30 +441,10 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         visionImage.metadata = metadata
         let imageWidth = CGFloat(CVPixelBufferGetWidth(imageBuffer))
         let imageHeight = CGFloat(CVPixelBufferGetHeight(imageBuffer))
-        //    var shouldEnableClassification = false
-        //    var shouldEnableMultipleObjects = false
-        //    switch currentDetector {
-        //    case .onDeviceObjectProminentWithClassifier, .onDeviceObjectMultipleWithClassifier:
-        //      shouldEnableClassification = true
-        //    default:
-        //      break
-        //    }
-        //    switch currentDetector {
-        //    case .onDeviceObjectMultipleNoClassifier, .onDeviceObjectMultipleWithClassifier:
-        //      shouldEnableMultipleObjects = true
-        //    default:
-        //      break
-        //    }
         
         switch currentDetector {
         case .onDeviceFace:
             detectFacesOnDevice(in: visionImage, width: imageWidth, height: imageHeight)
-            //    case .onDeviceObjectProminentNoClassifier, .onDeviceObjectProminentWithClassifier,
-            //         .onDeviceObjectMultipleNoClassifier, .onDeviceObjectMultipleWithClassifier:
-            //      let options = VisionObjectDetectorOptions()
-            //      options.shouldEnableClassification = shouldEnableClassification
-            //      options.shouldEnableMultipleObjects = shouldEnableMultipleObjects
-            //      options.detectorMode = .stream
         }
     }
 }
@@ -486,13 +452,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 // MARK: - Constants
 
 public enum Detector: String {
-    //  case onDeviceAutoMLImageLabeler = "On-Device AutoML Image Labeler"
     case onDeviceFace = "On-Device Face Detection"
-    //  case onDeviceText = "On-Device Text Recognition"
-    //  case onDeviceObjectProminentNoClassifier = "ODT for prominent object, only tracking"
-    //  case onDeviceObjectProminentWithClassifier = "ODT for prominent object with classification"
-    //  case onDeviceObjectMultipleNoClassifier = "ODT for multiple objects, only tracking"
-    //  case onDeviceObjectMultipleWithClassifier = "ODT for multiple objects with classification"
 }
 
 private enum Constant {
@@ -502,10 +462,6 @@ private enum Constant {
     static let videoDataOutputQueueLabel = "com.google.firebaseml.visiondetector.VideoDataOutputQueue"
     static let sessionQueueLabel = "com.google.firebaseml.visiondetector.SessionQueue"
     static let noResultsMessage = "No Results"
-//    static let localAutoMLModelName = "local_automl_model"
-//    static let remoteAutoMLModelName = "remote_automl_model"
-//    static let localModelManifestFileName = "automl_labeler_manifest"
-//    static let autoMLManifestFileType = "json"
     static let labelConfidenceThreshold: Float = 0.75
     static let smallDotRadius: CGFloat = 4.0
     static let originalScale: CGFloat = 1.0

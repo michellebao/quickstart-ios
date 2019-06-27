@@ -281,87 +281,87 @@ typedef NS_ENUM(NSInteger, DetectorPickerRow) {
 
 - (void)process:(FIRVisionImage *)visionImage withTextRecognizer:(FIRVisionTextRecognizer *)textRecognizer {
   // [START recognize_text]
-  [textRecognizer processImage:visionImage completion:^(FIRVisionText * _Nullable text, NSError * _Nullable error) {
-    if (text == nil) {
-      // [START_EXCLUDE]
-      self.resultsText = [NSMutableString stringWithFormat:@"Text recognizer failed with error: %@", error ? error.localizedDescription : detectionNoResultsMessage];
-      [self showResults];
-      // [END_EXCLUDE]
-      return;
-    }
-
-    // [START_EXCLUDE]
-    // Blocks.
-    for (FIRVisionTextBlock *block in text.blocks) {
-      CGRect transformedRect = CGRectApplyAffineTransform(block.frame, [self transformMatrix]);
-      [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.purpleColor];
-
-      // Lines.
-      for (FIRVisionTextLine *line in block.lines) {
-        CGRect transformedRect = CGRectApplyAffineTransform(line.frame, [self transformMatrix]);
-        [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.orangeColor];
-
-        // Elements.
-        for (FIRVisionTextElement *element in line.elements) {
-          CGRect transformedRect = CGRectApplyAffineTransform(element.frame, [self transformMatrix]);
-          [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.greenColor];
-          UILabel *label = [[UILabel alloc] initWithFrame:transformedRect];
-          label.text = element.text;
-          label.adjustsFontSizeToFitWidth = YES;
-          [self.annotationOverlayView addSubview:label];
-        }
-      }
-    }
-    [self.resultsText appendFormat:@"%@\n", text.text];
-    [self showResults];
-    // [END_EXCLUDE]
-  }];
-  // [END recognize_text]
+//  [textRecognizer processImage:visionImage completion:^(FIRVisionText * _Nullable text, NSError * _Nullable error) {
+//    if (text == nil) {
+//      // [START_EXCLUDE]
+//      self.resultsText = [NSMutableString stringWithFormat:@"Text recognizer failed with error: %@", error ? error.localizedDescription : detectionNoResultsMessage];
+//      [self showResults];
+//      // [END_EXCLUDE]
+//      return;
+//    }
+//
+//    // [START_EXCLUDE]
+//    // Blocks.
+//    for (FIRVisionTextBlock *block in text.blocks) {
+//      CGRect transformedRect = CGRectApplyAffineTransform(block.frame, [self transformMatrix]);
+//      [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.purpleColor];
+//
+//      // Lines.
+//      for (FIRVisionTextLine *line in block.lines) {
+//        CGRect transformedRect = CGRectApplyAffineTransform(line.frame, [self transformMatrix]);
+//        [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.orangeColor];
+//
+//        // Elements.
+//        for (FIRVisionTextElement *element in line.elements) {
+//          CGRect transformedRect = CGRectApplyAffineTransform(element.frame, [self transformMatrix]);
+//          [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.greenColor];
+//          UILabel *label = [[UILabel alloc] initWithFrame:transformedRect];
+//          label.text = element.text;
+//          label.adjustsFontSizeToFitWidth = YES;
+//          [self.annotationOverlayView addSubview:label];
+//        }
+//      }
+//    }
+//    [self.resultsText appendFormat:@"%@\n", text.text];
+//    [self showResults];
+//    // [END_EXCLUDE]
+//  }];
+//  // [END recognize_text]
 }
 
 - (void)process:(FIRVisionImage *)visionImage withDocumentTextRecognizer:(FIRVisionDocumentTextRecognizer *)documentTextRecognizer {
-  // [START recognize_document_text]
-  [documentTextRecognizer processImage:visionImage completion:^(FIRVisionDocumentText * _Nullable text, NSError * _Nullable error) {
-    if (text == nil) {
-      // [START_EXCLUDE]
-      self.resultsText = [NSMutableString stringWithFormat:@"Document text recognizer failed with error: %@", error ? error.localizedDescription : detectionNoResultsMessage];
-      [self showResults];
-      // [END_EXCLUDE]
-      return;
-    }
-    // [START_EXCLUDE]
-    // Blocks.
-    for (FIRVisionDocumentTextBlock *block in text.blocks) {
-      CGRect transformedRect = CGRectApplyAffineTransform(block.frame, [self transformMatrix]);
-      [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.purpleColor];
-
-      // Paragraphs.
-      for (FIRVisionDocumentTextParagraph *paragraph in block.paragraphs) {
-        CGRect transformedRect = CGRectApplyAffineTransform(paragraph.frame, [self transformMatrix]);
-        [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.orangeColor];
-
-        // Words.
-        for (FIRVisionDocumentTextWord *word in paragraph.words) {
-          CGRect transformedRect = CGRectApplyAffineTransform(word.frame, [self transformMatrix]);
-          [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.greenColor];
-
-          // Symbols.
-          for (FIRVisionDocumentTextSymbol *symbol in word.symbols) {
-            CGRect transformedRect = CGRectApplyAffineTransform(symbol.frame, [self transformMatrix]);
-            [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.cyanColor];
-            UILabel *label = [[UILabel alloc] initWithFrame:transformedRect];
-            label.text = symbol.text;
-            label.adjustsFontSizeToFitWidth = YES;
-            [self.annotationOverlayView addSubview:label];
-          }
-        }
-      }
-    }
-    [self.resultsText appendFormat:@"%@\n", text.text];
-    [self showResults];
-    // [END_EXCLUDE]
-  }];
-  // [END recognize_document_text]
+//  // [START recognize_document_text]
+//  [documentTextRecognizer processImage:visionImage completion:^(FIRVisionDocumentText * _Nullable text, NSError * _Nullable error) {
+//    if (text == nil) {
+//      // [START_EXCLUDE]
+//      self.resultsText = [NSMutableString stringWithFormat:@"Document text recognizer failed with error: %@", error ? error.localizedDescription : detectionNoResultsMessage];
+//      [self showResults];
+//      // [END_EXCLUDE]
+//      return;
+//    }
+//    // [START_EXCLUDE]
+//    // Blocks.
+//    for (FIRVisionDocumentTextBlock *block in text.blocks) {
+//      CGRect transformedRect = CGRectApplyAffineTransform(block.frame, [self transformMatrix]);
+//      [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.purpleColor];
+//
+//      // Paragraphs.
+//      for (FIRVisionDocumentTextParagraph *paragraph in block.paragraphs) {
+//        CGRect transformedRect = CGRectApplyAffineTransform(paragraph.frame, [self transformMatrix]);
+//        [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.orangeColor];
+//
+//        // Words.
+//        for (FIRVisionDocumentTextWord *word in paragraph.words) {
+//          CGRect transformedRect = CGRectApplyAffineTransform(word.frame, [self transformMatrix]);
+//          [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.greenColor];
+//
+//          // Symbols.
+//          for (FIRVisionDocumentTextSymbol *symbol in word.symbols) {
+//            CGRect transformedRect = CGRectApplyAffineTransform(symbol.frame, [self transformMatrix]);
+//            [UIUtilities addRectangle:transformedRect toView:self.annotationOverlayView color:UIColor.cyanColor];
+//            UILabel *label = [[UILabel alloc] initWithFrame:transformedRect];
+//            label.text = symbol.text;
+//            label.adjustsFontSizeToFitWidth = YES;
+//            [self.annotationOverlayView addSubview:label];
+//          }
+//        }
+//      }
+//    }
+//    [self.resultsText appendFormat:@"%@\n", text.text];
+//    [self showResults];
+//    // [END_EXCLUDE]
+//  }];
+//  // [END recognize_document_text]
 }
 
 #pragma mark - UIPickerViewDataSource
