@@ -47,8 +47,7 @@ class CameraViewController: UIViewController {
     
     private var chosen = [String]()
 
-    
-    var featuresStruct = trackFeatures(smile: 1, blink: 1, turnRight: 1, turnLeft: 1, tiltRight: 1, tiltLeft: 1)
+    var featuresStruct = trackFeatures(smile: 0, blink: 0, turnRight: 0, turnLeft: 0, tiltRight: 0, tiltLeft: 0)
     var smileArr = [Double](repeating: 0.0, count: 6), blinkArr = [Double](repeating: 0.0, count: 6), turnArr = [Double](repeating: 0.0, count: 6), tiltArr = [Double](repeating: 0.0, count: 6)
 
 
@@ -83,12 +82,12 @@ class CameraViewController: UIViewController {
         setUpCaptureSessionOutput()
         setUpCaptureSessionInput()
         chooseGestures(number: 3)
+        setupStruct()
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        instructionsLabel.text = "INSTRUCTIONS!"
         startSession()
     }
     
@@ -154,12 +153,36 @@ class CameraViewController: UIViewController {
     }
     
     private func chooseGestures(number: Int) {
-            let allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
-            for _ in 1...number {
-                let choose = allGestures.randomElement()!
-                chosen.append(choose)
+        let allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
+        for _ in 1...number {
+            let choose = allGestures.randomElement()!
+            chosen.append(choose)
+        }
+        instructionsLabel.text = chosen.joined(separator: ", ")
+    }
+    
+    private func setupStruct() {
+        for feature in chosen {
+            if feature == "smile" {
+                featuresStruct.smile = 1
+            }
+            if feature == "blink" {
+                featuresStruct.blink = 1
+            }
+            if feature == "turnRight" {
+                featuresStruct.turnRight = 1
+            }
+            if feature == "turnLeft" {
+                featuresStruct.turnLeft = 1
+            }
+            if feature == "tiltLeft" {
+                featuresStruct.tiltLeft = 1
+            }
+            if feature == "tiltRight" {
+                featuresStruct.tiltRight = 1
             }
         }
+    }
 
     private func featureTracker(storeValue: Double, feature: String, states: inout Array<Double>) -> Bool {
         states.append(storeValue)
@@ -211,6 +234,7 @@ class CameraViewController: UIViewController {
         }
         guard let faces = detectedFaces, !faces.isEmpty else {
             //print("Please show your face on the screen.")
+            statusLabel.text = "FACE NOT ON SCREEN"
             DispatchQueue.main.sync {
                 self.updatePreviewOverlayView()
                 self.removeDetectionAnnotations()
@@ -223,101 +247,65 @@ class CameraViewController: UIViewController {
             self.removeDetectionAnnotations()
             for face in faces {
                 var checkSmile = false, checkBlink = false, checkturnRight = false, checkturnLeft = false, checktiltRight = false, checktiltLeft = false
-                //while !check {
-                    if featuresStruct.smile == 1 {
-                        let smileProb = face.smilingProbability
-                        checkSmile = featureTracker(storeValue : Double(smileProb), feature: "smile", states: &smileArr)
-                    }
-                    if featuresStruct.blink == 1 {
-                        let blinkProb = (face.leftEyeOpenProbability + face.rightEyeOpenProbability) / 2
-                        checkBlink = featureTracker(storeValue : Double(blinkProb), feature: "blink", states: &blinkArr)
-                    }
-                    if featuresStruct.turnRight == 1 {
-                        let turnProb = face.headEulerAngleY
-                        checkturnRight = featureTracker(storeValue : Double(turnProb), feature: "rightturn", states: &turnArr)
-                    }
-                    if featuresStruct.turnLeft == 1 {
-                        let turnProb = face.headEulerAngleY
-                        checkturnLeft = featureTracker(storeValue : Double(turnProb), feature: "leftturn", states: &turnArr)
-                    }
-                    if featuresStruct.tiltRight == 1 {
-                        let tiltProb = face.headEulerAngleZ
-                        checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "righttilt", states: &tiltArr)
-                    }
-                    if featuresStruct.tiltLeft == 1 {
-                        let tiltProb = face.headEulerAngleZ
-                        checktiltLeft = featureTracker(storeValue : Double(tiltProb), feature: "lefttilt", states: &tiltArr)
-                    }
-                //}
+                print(chosen)
+                print(featuresStruct)
+                if featuresStruct.smile == 1 && chosen[0] == "smile" {
+                    let smileProb = face.smilingProbability
+                    checkSmile = featureTracker(storeValue : Double(smileProb), feature: "smile", states: &smileArr)
+                }
+                if featuresStruct.blink == 1  && chosen[0] == "blink" {
+                    let blinkProb = (face.leftEyeOpenProbability + face.rightEyeOpenProbability) / 2
+                    checkBlink = featureTracker(storeValue : Double(blinkProb), feature: "blink", states: &blinkArr)
+                }
+                if featuresStruct.turnRight == 1  && chosen[0] == "turnRight" {
+                    let turnProb = face.headEulerAngleY
+                    checkturnRight = featureTracker(storeValue : Double(turnProb), feature: "rightturn", states: &turnArr)
+                }
+                if featuresStruct.turnLeft == 1  && chosen[0] == "turnLeft" {
+                    let turnProb = face.headEulerAngleY
+                    checkturnLeft = featureTracker(storeValue : Double(turnProb), feature: "leftturn", states: &turnArr)
+                }
+                if featuresStruct.tiltRight == 1  && chosen[0] == "tiltRight" {
+                    let tiltProb = face.headEulerAngleZ
+                    checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "righttilt", states: &tiltArr)
+                }
+                if featuresStruct.tiltLeft == 1  && chosen[0] == "tiltLeft" {
+                    let tiltProb = face.headEulerAngleZ
+                    checktiltLeft = featureTracker(storeValue : Double(tiltProb), feature: "lefttilt", states: &tiltArr)
+                }
                 let arr = [checkSmile, checkBlink, checkturnRight, checkturnLeft, checktiltRight, checktiltLeft]
-                //print(arr)
                 statusLabel.text = "NOT SATISFIED"
-
                 for elem in arr {
-                    
-                    //print(elem)
                     if elem == true {
+                        chosen.removeFirst(1)
+                        instructionsLabel.text = chosen.joined(separator: ", ")
+                        if chosen.isEmpty {
+                            instructionsLabel.text = "ALL GESTURES COMPLETED"
+                        }
                         let index = arr.index(of: elem)!
-                        print(index)
                         switch index {
                         case 0:
                             statusLabel.text = "SMILED"
+                            featuresStruct.smile = 0
                         case 1:
                             statusLabel.text = "BLINKED"
+                            featuresStruct.blink = 0
                         case 2:
                             statusLabel.text = "TURNED RIGHT"
+                            featuresStruct.turnRight = 0
                         case 3:
                             statusLabel.text = "TURNED LEFT"
+                            featuresStruct.turnLeft = 0
                         case 4:
                             statusLabel.text = "TILTED RIGHT"
+                            featuresStruct.tiltRight = 0
                         case 5:
                             statusLabel.text = "TILTED LEFT"
+                            featuresStruct.tiltLeft = 0
                         default: break
                         }
-                        
                     }
                 }
-                
-//                if face.hasSmilingProbability {
-//                    let smileProb = face.smilingProbability
-//                    if smileProb > 0.6 {
-//                        print(":D")
-//                    }
-//                    else {
-//                        print("D:")
-//                    }
-//                }
-//
-//                if face.hasLeftEyeOpenProbability && face.hasRightEyeOpenProbability {
-//                    let leftProb = face.leftEyeOpenProbability
-//                    let rightProb = face.rightEyeOpenProbability
-//                    if leftProb > 0.6 && rightProb > 0.6 {
-//                        print("EYES OPEN")
-//                    }
-//                    else {
-//                        print ("EYES CLOSED")
-//                    }
-//                }
-//
-//                if face.hasHeadEulerAngleY {
-//                    let rotY = face.headEulerAngleY  // Head is rotated to the right rotY degrees
-//                    if rotY > 30 {
-//                        print("LOOKING TO THE RIGHT")
-//                    }
-//                    else if rotY < -30 {
-//                        print("LOOKING TO THE LEFT")
-//                    }
-//                }
-//                if face.hasHeadEulerAngleZ {
-//                    let rotZ = face.headEulerAngleZ  // Head is rotated upward rotZ degrees
-//                    //print(rotZ)
-//                    if rotZ > 30 {
-//                        print("TILTING HEAD TO THE LEFT")
-//                    }
-//                    else if rotZ < -30 {
-//                        print("TILTING HEAD TO THE RIGHT")
-//                    }
-//                }
             }
         }
     }
