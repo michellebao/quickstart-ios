@@ -42,7 +42,16 @@ class CameraViewController: UIViewController {
     private var areAutoMLModelsRegistered = false
     private lazy var modelManager = ModelManager.modelManager()
     @IBOutlet var downloadProgressView: UIProgressView!
+    @IBOutlet var instructionsLabel: UILabel!
+    @IBOutlet var statusLabel: UILabel!
     
+    private var chosen = [String]()
+
+    
+    var featuresStruct = trackFeatures(smile: 1, blink: 1, turnRight: 1, turnLeft: 1, tiltRight: 1, tiltLeft: 1)
+    var smileArr = [Double](repeating: 0.0, count: 6), blinkArr = [Double](repeating: 0.0, count: 6), turnArr = [Double](repeating: 0.0, count: 6), tiltArr = [Double](repeating: 0.0, count: 6)
+
+
     private lazy var previewOverlayView: UIImageView = {
         
         precondition(isViewLoaded)
@@ -73,12 +82,13 @@ class CameraViewController: UIViewController {
         setUpAnnotationOverlayView()
         setUpCaptureSessionOutput()
         setUpCaptureSessionInput()
-        //view.addSubview(UILabel)
+        chooseGestures(number: 3)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        instructionsLabel.text = "INSTRUCTIONS!"
         startSession()
     }
     
@@ -142,69 +152,54 @@ class CameraViewController: UIViewController {
         if Thread.isMainThread { notificationHandler(); return }
         DispatchQueue.main.async { notificationHandler() }
     }
-
     
-    // MARK: Other On-Device Detections
-    
-    private func featureClassification(storeValue: Double, feature: String) {
-        switch feature {
-        case "smile":
-            let threshold = 0.6
-            if storeValue > threshold {
-                status = 1
-            }
-            else {
-                status = 0
+    private func chooseGestures(number: Int) {
+            let allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
+            for _ in 1...number {
+                let choose = allGestures.randomElement()!
+                chosen.append(choose)
             }
         }
-        case "eyes" {
-            let threshold = 0.6
-            if storeValue > threshold {
-                status = 1
-            }
-            else {
-                status = 0
-            }
-        }
-        case "turn" {
-            let threshold = 30
 
-
-        }
-        case "tilt" {
-            let threshold = 30
-        }
-        default: break
-
-        let probThreshold = 0.6
-        let eulerThreshold = 30.0
+    private func featureTracker(storeValue: Double, feature: String, states: inout Array<Double>) -> Bool {
+        states.append(storeValue)
+        let probThreshold = 0.5
+        let turnThreshold = 30.0
+        let tiltThreshold = 20.0
+        var recent = states.suffix(4)
+        var check = false
+        
         if feature == "smile" {
-            if storeValue > probThreshold {
-                featureTracker(1, feature)
-            }
-            else {
-                featureTracker(0, feature)
-            }
+            check = recent.allSatisfy { $0 > probThreshold }
         }
-        else if feature == "eyes" {
-
+        if feature == "blink" {
+            recent = states.suffix(3)
+            check = recent.allSatisfy { $0 < probThreshold }
         }
+        if feature == "rightturn" {
+            check = recent.allSatisfy{ $0 > turnThreshold }
+        }
+        if feature == "leftturn" {
+            check = recent.allSatisfy{ $0 < -turnThreshold }
+        }
+        if feature == "lefttilt" {
+            check = recent.allSatisfy{ $0 > tiltThreshold }
+        }
+        if feature == "righttilt" {
+            check = recent.allSatisfy{ $0 < -tiltThreshold }
+        }
+        //dump(recent)
+        return check
     }
-
-    private func featureTracker(storeValue: Bool, feature: String)
-    
-    
     
     private func detectFacesOnDevice(in image: VisionImage, width: CGFloat, height: CGFloat) {
         let options = VisionFaceDetectorOptions()
-        
         // When performing latency tests to determine ideal detection settings,
         // run the app in 'release' mode to get accurate performance metrics
         options.landmarkMode = .all
         options.contourMode = .all
         options.classificationMode = .all
         options.isTrackingEnabled = true
-        
         options.performanceMode = .fast
         let faceDetector = vision.faceDetector(options: options)
         
@@ -215,7 +210,7 @@ class CameraViewController: UIViewController {
             print("Failed to detect faces with error: \(error.localizedDescription).")
         }
         guard let faces = detectedFaces, !faces.isEmpty else {
-            print("Please show your face on the screen.")
+            //print("Please show your face on the screen.")
             DispatchQueue.main.sync {
                 self.updatePreviewOverlayView()
                 self.removeDetectionAnnotations()
@@ -227,46 +222,102 @@ class CameraViewController: UIViewController {
             self.updatePreviewOverlayView()
             self.removeDetectionAnnotations()
             for face in faces {
-                if face.hasSmilingProbability {
-                    let smileProb = face.smilingProbability
-                    if smileProb > 0.6 {
-                        print(":D")
+                var checkSmile = false, checkBlink = false, checkturnRight = false, checkturnLeft = false, checktiltRight = false, checktiltLeft = false
+                //while !check {
+                    if featuresStruct.smile == 1 {
+                        let smileProb = face.smilingProbability
+                        checkSmile = featureTracker(storeValue : Double(smileProb), feature: "smile", states: &smileArr)
                     }
-                    else {
-                        print("D:")
+                    if featuresStruct.blink == 1 {
+                        let blinkProb = (face.leftEyeOpenProbability + face.rightEyeOpenProbability) / 2
+                        checkBlink = featureTracker(storeValue : Double(blinkProb), feature: "blink", states: &blinkArr)
+                    }
+                    if featuresStruct.turnRight == 1 {
+                        let turnProb = face.headEulerAngleY
+                        checkturnRight = featureTracker(storeValue : Double(turnProb), feature: "rightturn", states: &turnArr)
+                    }
+                    if featuresStruct.turnLeft == 1 {
+                        let turnProb = face.headEulerAngleY
+                        checkturnLeft = featureTracker(storeValue : Double(turnProb), feature: "leftturn", states: &turnArr)
+                    }
+                    if featuresStruct.tiltRight == 1 {
+                        let tiltProb = face.headEulerAngleZ
+                        checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "righttilt", states: &tiltArr)
+                    }
+                    if featuresStruct.tiltLeft == 1 {
+                        let tiltProb = face.headEulerAngleZ
+                        checktiltLeft = featureTracker(storeValue : Double(tiltProb), feature: "lefttilt", states: &tiltArr)
+                    }
+                //}
+                let arr = [checkSmile, checkBlink, checkturnRight, checkturnLeft, checktiltRight, checktiltLeft]
+                //print(arr)
+                statusLabel.text = "NOT SATISFIED"
+
+                for elem in arr {
+                    
+                    //print(elem)
+                    if elem == true {
+                        let index = arr.index(of: elem)!
+                        print(index)
+                        switch index {
+                        case 0:
+                            statusLabel.text = "SMILED"
+                        case 1:
+                            statusLabel.text = "BLINKED"
+                        case 2:
+                            statusLabel.text = "TURNED RIGHT"
+                        case 3:
+                            statusLabel.text = "TURNED LEFT"
+                        case 4:
+                            statusLabel.text = "TILTED RIGHT"
+                        case 5:
+                            statusLabel.text = "TILTED LEFT"
+                        default: break
+                        }
+                        
                     }
                 }
                 
-                if face.hasLeftEyeOpenProbability && face.hasRightEyeOpenProbability {
-                    let leftProb = face.leftEyeOpenProbability
-                    let rightProb = face.rightEyeOpenProbability
-                    if leftProb > 0.6 && rightProb > 0.6 {
-                        print("EYES OPEN")
-                    }
-                    else {
-                        print ("EYES CLOSED")
-                    }
-                }
-                
-                if face.hasHeadEulerAngleY {
-                    let rotY = face.headEulerAngleY  // Head is rotated to the right rotY degrees
-                    if rotY > 30 {
-                        print("LOOKING TO THE RIGHT")
-                    }
-                    else if rotY < -30 {
-                        print("LOOKING TO THE LEFT")
-                    }
-                }
-                if face.hasHeadEulerAngleZ {
-                    let rotZ = face.headEulerAngleZ  // Head is rotated upward rotZ degrees
-                    //print(rotZ)
-                    if rotZ > 30 {
-                        print("TILTING HEAD TO THE LEFT")
-                    }
-                    else if rotZ < -30 {
-                        print("TILTING HEAD TO THE RIGHT")
-                    }
-                }
+//                if face.hasSmilingProbability {
+//                    let smileProb = face.smilingProbability
+//                    if smileProb > 0.6 {
+//                        print(":D")
+//                    }
+//                    else {
+//                        print("D:")
+//                    }
+//                }
+//
+//                if face.hasLeftEyeOpenProbability && face.hasRightEyeOpenProbability {
+//                    let leftProb = face.leftEyeOpenProbability
+//                    let rightProb = face.rightEyeOpenProbability
+//                    if leftProb > 0.6 && rightProb > 0.6 {
+//                        print("EYES OPEN")
+//                    }
+//                    else {
+//                        print ("EYES CLOSED")
+//                    }
+//                }
+//
+//                if face.hasHeadEulerAngleY {
+//                    let rotY = face.headEulerAngleY  // Head is rotated to the right rotY degrees
+//                    if rotY > 30 {
+//                        print("LOOKING TO THE RIGHT")
+//                    }
+//                    else if rotY < -30 {
+//                        print("LOOKING TO THE LEFT")
+//                    }
+//                }
+//                if face.hasHeadEulerAngleZ {
+//                    let rotZ = face.headEulerAngleZ  // Head is rotated upward rotZ degrees
+//                    //print(rotZ)
+//                    if rotZ > 30 {
+//                        print("TILTING HEAD TO THE LEFT")
+//                    }
+//                    else if rotZ < -30 {
+//                        print("TILTING HEAD TO THE RIGHT")
+//                    }
+//                }
             }
         }
     }
@@ -473,7 +524,7 @@ private enum Constant {
     static let resultsLabelLines = 5
 }
 
-private struct Features {
+struct trackFeatures {
     var smile = 0
     var blink = 0
     var turnRight = 0

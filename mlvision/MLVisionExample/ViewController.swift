@@ -465,7 +465,6 @@ extension ViewController {
                 // [END_EXCLUDE]
                 return
             }
-            
             // Faces detected
             // [START_EXCLUDE]
             faces.forEach { face in
