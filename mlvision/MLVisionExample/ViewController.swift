@@ -468,13 +468,6 @@ extension ViewController {
             // Faces detected
             // [START_EXCLUDE]
             faces.forEach { face in
-//                let transform = self.transformMatrix()
-//                let transformedRect = face.frame.applying(transform)
-//                UIUtilities.addRectangle(
-//                    transformedRect,
-//                    to: self.annotationOverlayView,
-//                    color: UIColor.green
-//                )
             }
             self.resultsText = faces.map { face in
                 let headEulerAngleY = face.hasHeadEulerAngleY ? face.headEulerAngleY.description : "NA"
@@ -513,8 +506,7 @@ private enum DetectorPickerRow: Int {
 }
 
 private enum Constants {
-    static let images = ["uber.jpg", "grace_hopper.jpg", "barcode_128.png", "qr_code.jpg", "beach.jpg",
-                         "image_has_text.jpg", "liberty.jpg"]
+    static let images = ["uber.jpg"]
     static let modelExtension = "tflite"
     static let localModelName = "mobilenet"
     static let quantizedModelFilename = "mobilenet_quant_v1_224"

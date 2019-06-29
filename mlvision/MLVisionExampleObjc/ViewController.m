@@ -107,7 +107,7 @@ typedef NS_ENUM(NSInteger, DetectorPickerRow) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  images = @["@uber.jpg", @"grace_hopper.jpg", @"barcode_128.png", @"qr_code.jpg", @"beach.jpg", @"image_has_text.jpg", @"liberty.jpg"];
+    images = @["@uber.jpg"];
   lineColor = UIColor.yellowColor.CGColor;
   fillColor = UIColor.clearColor.CGColor;
 
