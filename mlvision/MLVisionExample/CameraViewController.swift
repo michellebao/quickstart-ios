@@ -30,7 +30,7 @@ class CameraViewController: UIViewController {
     private lazy var sessionQueue = DispatchQueue(label: Constant.sessionQueueLabel)
     private lazy var vision = Vision.vision()
     private var lastFrame: CMSampleBuffer?
-    private var areAutoMLModelsRegistered = false
+    //private var areAutoMLModelsRegistered = false
     private lazy var modelManager = ModelManager.modelManager()
     @IBOutlet var downloadProgressView: UIProgressView!
     @IBOutlet var instructionsLabel: UILabel!
@@ -106,15 +106,15 @@ class CameraViewController: UIViewController {
     
     // MARK: - IBActions
     
-    @IBAction func selectDetector(_ sender: Any) {
-        presentDetectorsAlertController()
-    }
-    
-    @IBAction func switchCamera(_ sender: Any) {
-        isUsingFrontCamera = !isUsingFrontCamera
-        removeDetectionAnnotations()
-        setUpCaptureSessionInput()
-    }
+//    @IBAction func selectDetector(_ sender: Any) {
+//        presentDetectorsAlertController()
+//    }
+//
+//    @IBAction func switchCamera(_ sender: Any) {
+//        isUsingFrontCamera = !isUsingFrontCamera
+//        removeDetectionAnnotations()
+//        setUpCaptureSessionInput()
+//    }
     
     // MARK: - Notifications
     
