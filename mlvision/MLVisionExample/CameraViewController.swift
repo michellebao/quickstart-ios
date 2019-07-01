@@ -18,9 +18,7 @@ import AVFoundation
 import CoreVideo
 
 import FirebaseMLVision
-import FirebaseMLVisionObjectDetection
 import FirebaseMLCommon
-import FirebaseMLVisionAutoML
 
 @objc(CameraViewController)
 class CameraViewController: UIViewController {
@@ -120,40 +118,40 @@ class CameraViewController: UIViewController {
     
     // MARK: - Notifications
     
-    @objc
-    private func remoteModelDownloadDidSucceed(_ notification: Notification) {
-        let notificationHandler = {
-            self.downloadProgressView.isHidden = true
-            guard let userInfo = notification.userInfo,
-                let remoteModel =
-                userInfo[ModelDownloadUserInfoKey.remoteModel.rawValue] as? RemoteModel
-                else {
-                    print("firebaseMLModelDownloadDidSucceed notification posted without a RemoteModel instance.")
-                    return
-            }
-            print("Successfully downloaded the remote model with name: \(remoteModel.name). The model is ready for detection.")
-        }
-        if Thread.isMainThread { notificationHandler(); return }
-        DispatchQueue.main.async { notificationHandler() }
-    }
-    
-    @objc
-    private func remoteModelDownloadDidFail(_ notification: Notification) {
-        let notificationHandler = {
-            self.downloadProgressView.isHidden = true
-            guard let userInfo = notification.userInfo,
-                let remoteModel =
-                userInfo[ModelDownloadUserInfoKey.remoteModel.rawValue] as? RemoteModel,
-                let error = userInfo[ModelDownloadUserInfoKey.error.rawValue] as? NSError
-                else {
-                    print("firebaseMLModelDownloadDidFail notification posted without a RemoteModel instance or error.")
-                    return
-            }
-            print("Failed to download the remote model with name: \(remoteModel.name), error: \(error).")
-        }
-        if Thread.isMainThread { notificationHandler(); return }
-        DispatchQueue.main.async { notificationHandler() }
-    }
+//    @objc
+//    private func remoteModelDownloadDidSucceed(_ notification: Notification) {
+//        let notificationHandler = {
+//            self.downloadProgressView.isHidden = true
+//            guard let userInfo = notification.userInfo,
+//                let remoteModel =
+//                userInfo[ModelDownloadUserInfoKey.remoteModel.rawValue] as? RemoteModel
+//                else {
+//                    print("firebaseMLModelDownloadDidSucceed notification posted without a RemoteModel instance.")
+//                    return
+//            }
+//            print("Successfully downloaded the remote model with name: \(remoteModel.name). The model is ready for detection.")
+//        }
+//        if Thread.isMainThread { notificationHandler(); return }
+//        DispatchQueue.main.async { notificationHandler() }
+//    }
+//
+//    @objc
+//    private func remoteModelDownloadDidFail(_ notification: Notification) {
+//        let notificationHandler = {
+//            self.downloadProgressView.isHidden = true
+//            guard let userInfo = notification.userInfo,
+//                let remoteModel =
+//                userInfo[ModelDownloadUserInfoKey.remoteModel.rawValue] as? RemoteModel,
+//                let error = userInfo[ModelDownloadUserInfoKey.error.rawValue] as? NSError
+//                else {
+//                    print("firebaseMLModelDownloadDidFail notification posted without a RemoteModel instance or error.")
+//                    return
+//            }
+//            print("Failed to download the remote model with name: \(remoteModel.name), error: \(error).")
+//        }
+//        if Thread.isMainThread { notificationHandler(); return }
+//        DispatchQueue.main.async { notificationHandler() }
+//    }
     
     private func chooseGestures(number: Int) -> [String] {
         for _ in 1...number {

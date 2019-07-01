@@ -20,9 +20,9 @@
 @import CoreVideo;
 
 @import FirebaseMLVision;
-@import FirebaseMLVisionObjectDetection;
+//@import FirebaseMLVisionObjectDetection;
 @import FirebaseMLCommon;
-@import FirebaseMLVisionAutoML;
+//@import FirebaseMLVisionAutoML;
 
 NS_ASSUME_NONNULL_BEGIN
 
