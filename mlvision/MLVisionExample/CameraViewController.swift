@@ -39,7 +39,9 @@ class CameraViewController: UIViewController {
     @IBOutlet var statusLabel: UILabel!
     
     private var chosen = [String]()
-    private var allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
+    //private var allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
+    private var allGestures = ["smile", "blink", "turnRight", "turnLeft"]
+    private var originalChosen = [String]()
 
     var featuresStruct = trackFeatures(smile: 0, blink: 0, turnRight: 0, turnLeft: 0, tiltRight: 0, tiltLeft: 0)
     var smileArr = [Double](repeating: 0.0, count: 6), blinkArr = [Double](repeating: 0.0, count: 6), turnArr = [Double](repeating: 0.0, count: 6), tiltArr = [Double](repeating: 0.0, count: 6)
@@ -80,8 +82,8 @@ class CameraViewController: UIViewController {
         setUpAnnotationOverlayView()
         setUpCaptureSessionOutput()
         setUpCaptureSessionInput()
-        chooseGestures(number: 3)
-        setupStruct()
+        chosen = chooseGestures(number: 3)
+        setupStruct(chosen: chosen)
         
     }
     
@@ -151,15 +153,17 @@ class CameraViewController: UIViewController {
         DispatchQueue.main.async { notificationHandler() }
     }
     
-    private func chooseGestures(number: Int) {
+    private func chooseGestures(number: Int) -> [String] {
         for _ in 1...number {
             var choose = allGestures.randomElement()!
-            while chosen.last == choose {
+            while chosen.contains(choose) {
                 choose = allGestures.randomElement()!
             }
             chosen.append(choose)
         }
+        originalChosen = chosen
         instructionsLabel.text = chosen.joined(separator: ", ")
+        return chosen
     }
     
     private func setStruct(gesture: String, val: Int) {
@@ -180,29 +184,42 @@ class CameraViewController: UIViewController {
         }
     }
     
-    private func setupStruct() {
-        for feature in chosen {
-            setStruct(gesture: feature, val: 1)
+    private func setupStruct(chosen: [String]) {
+        for feature in allGestures {
+            if chosen.contains(feature) {
+                setStruct(gesture: feature, val: 1)
+            }
+            else {
+                setStruct(gesture: feature, val: 0)
+            }
         }
+    }
+    
+    private func reset() {
+        chosen = originalChosen
+        instructionsLabel.text = chosen.joined(separator: ", ")
+        setupStruct(chosen: chosen)
     }
 
     private func featureTracker(storeValue: Double, feature: String, states: inout Array<Double>) -> Bool {
         states.append(storeValue)
-        var recent = states.suffix(4)
+        let recent = states.suffix(4)
         var check = false
         
         if feature == "smile" {
             check = recent.allSatisfy { $0 > probThreshold }
         }
         if feature == "blink" {
-            recent = states.suffix(3)
+            //recent = states.suffix(3)
             check = recent.allSatisfy { $0 < probThreshold }
         }
         if feature == "turnRight" {
             check = recent.allSatisfy{ $0 > turnThreshold }
+            print(recent)
         }
         if feature == "turnLeft" {
             check = recent.allSatisfy{ $0 < -turnThreshold }
+            print(recent)
         }
         if feature == "tiltLeft" {
             check = recent.allSatisfy{ $0 > tiltThreshold }
@@ -224,8 +241,6 @@ class CameraViewController: UIViewController {
         options.performanceMode = .fast
         let faceDetector = vision.faceDetector(options: options)
         
-        print(faceOffScreen)
-        
         var detectedFaces: [VisionFace]? = nil
         do {
             detectedFaces = try faceDetector.results(in: image)
@@ -233,12 +248,12 @@ class CameraViewController: UIViewController {
             print("Failed to detect faces with error: \(error.localizedDescription).")
         }
         guard let faces = detectedFaces, !faces.isEmpty else {
-            print("Please show your face on the screen.")
             faceOffScreen = true
             DispatchQueue.main.sync {
                 self.updatePreviewOverlayView()
                 self.removeDetectionAnnotations()
-                statusLabel.text = "FACE IS OFF SCREEN"
+                statusLabel.text = "FACE IS OFF SCREEN" // HOW DO I RESTART VIDEO SESSION???
+                reset()
             }
             return
         }
@@ -268,7 +283,7 @@ class CameraViewController: UIViewController {
                 }
                 if featuresStruct.tiltRight == 1  && chosen[0] == "tiltRight" {
                     let tiltProb = face.headEulerAngleZ
-                    checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "tiltEight", states: &tiltArr)
+                    checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "tiltRight", states: &tiltArr)
                 }
                 if featuresStruct.tiltLeft == 1  && chosen[0] == "tiltLeft" {
                     let tiltProb = face.headEulerAngleZ
@@ -279,9 +294,7 @@ class CameraViewController: UIViewController {
                 //print(arr)
                 for elem in arr {
                     if elem == true {
-                        print(chosen)
                         chosen.removeFirst(1)
-                        print(chosen)
                         instructionsLabel.text = chosen.joined(separator: ", ")
                         if chosen.isEmpty {
                             instructionsLabel.text = "ALL GESTURES COMPLETED"
