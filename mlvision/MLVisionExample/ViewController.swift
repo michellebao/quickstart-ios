@@ -469,23 +469,23 @@ extension ViewController {
             // [START_EXCLUDE]
             faces.forEach { face in
             }
-            self.resultsText = faces.map { face in
-                let headEulerAngleY = face.hasHeadEulerAngleY ? face.headEulerAngleY.description : "NA"
-                let headEulerAngleZ = face.hasHeadEulerAngleZ ? face.headEulerAngleZ.description : "NA"
-                let leftEyeOpenProbability = face.hasLeftEyeOpenProbability ? face.leftEyeOpenProbability.description : "NA"
-                let rightEyeOpenProbability = face.hasRightEyeOpenProbability ? face.rightEyeOpenProbability.description : "NA"
-                let smilingProbability = face.hasSmilingProbability ? face.smilingProbability.description : "NA"
-                let output = """
-                Frame: \(face.frame)
-                Head Euler Angle Y: \(headEulerAngleY)
-                Head Euler Angle Z: \(headEulerAngleZ)
-                Left Eye Open Probability: \(leftEyeOpenProbability)
-                Right Eye Open Probability: \(rightEyeOpenProbability)
-                Smiling Probability: \(smilingProbability)
-                """
-                return "\(output)"
-                }.joined(separator: "\n")
-            self.showResults()
+            //self.resultsText = faces.map { face in
+                //let headEulerAngleY = face.hasHeadEulerAngleY ? face.headEulerAngleY.description : "NA"
+                //let headEulerAngleZ = face.hasHeadEulerAngleZ ? face.headEulerAngleZ.description : "NA"
+                //let leftEyeOpenProbability = face.hasLeftEyeOpenProbability ? face.leftEyeOpenProbability.description : "NA"
+                //let rightEyeOpenProbability = face.hasRightEyeOpenProbability ? face.rightEyeOpenProbability.description : "NA"
+                //let smilingProbability = face.hasSmilingProbability ? face.smilingProbability.description : "NA"
+                //let output = """
+                //Frame: \(face.frame)
+                //Head Euler Angle Y: \(headEulerAngleY)
+                //Head Euler Angle Z: \(headEulerAngleZ)
+                //Left Eye Open Probability: \(leftEyeOpenProbability)
+                //Right Eye Open Probability: \(rightEyeOpenProbability)
+                //Smiling Probability: \(smilingProbability)
+                //"""
+                //return "\(output)"
+                //}.joined(separator: "\n")
+            //self.showResults()
             // [END_EXCLUDE]
         }
         // [END detect_faces]

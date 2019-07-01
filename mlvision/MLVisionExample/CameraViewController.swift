@@ -39,18 +39,20 @@ class CameraViewController: UIViewController {
     @IBOutlet var statusLabel: UILabel!
     
     private var chosen = [String]()
-    //private var allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
-    private var allGestures = ["smile", "blink", "turnRight", "turnLeft"]
+    private var allGestures = ["smile", "blink", "turnRight", "turnLeft", "tiltRight", "tiltLeft"]
+    //private var allGestures = ["smile", "blink", "turnRight", "turnLeft"]
     private var originalChosen = [String]()
 
-    var featuresStruct = trackFeatures(smile: 0, blink: 0, turnRight: 0, turnLeft: 0, tiltRight: 0, tiltLeft: 0)
-    var smileArr = [Double](repeating: 0.0, count: 6), blinkArr = [Double](repeating: 0.0, count: 6), turnArr = [Double](repeating: 0.0, count: 6), tiltArr = [Double](repeating: 0.0, count: 6)
+    private var featuresStruct = trackFeatures(smile: 0, blink: 0, turnRight: 0, turnLeft: 0, tiltRight: 0, tiltLeft: 0)
+    private var smileArr = [Double](repeating: 0.0, count: 6), blinkArr = [Double](repeating: 0.0, count: 6), turnArr = [Double](repeating: 0.0, count: 6), tiltArr = [Double](repeating: 0.0, count: 6)
 
     let probThreshold = 0.5
+    let blinkThreshold = 0.1
     let turnThreshold = 30.0
     let tiltThreshold = 20.0
     
-    var faceOffScreen = false
+    private var faceOffScreen = false
+    private var faceID = 0
 
     private lazy var previewOverlayView: UIImageView = {
         
@@ -203,23 +205,21 @@ class CameraViewController: UIViewController {
 
     private func featureTracker(storeValue: Double, feature: String, states: inout Array<Double>) -> Bool {
         states.append(storeValue)
-        let recent = states.suffix(4)
+        var recent = states.suffix(4)
         var check = false
         
         if feature == "smile" {
             check = recent.allSatisfy { $0 > probThreshold }
         }
         if feature == "blink" {
-            //recent = states.suffix(3)
-            check = recent.allSatisfy { $0 < probThreshold }
+            recent = states.suffix(2)
+            check = recent.allSatisfy { $0 < blinkThreshold}
         }
         if feature == "turnRight" {
             check = recent.allSatisfy{ $0 > turnThreshold }
-            print(recent)
         }
         if feature == "turnLeft" {
             check = recent.allSatisfy{ $0 < -turnThreshold }
-            print(recent)
         }
         if feature == "tiltLeft" {
             check = recent.allSatisfy{ $0 > tiltThreshold }
@@ -230,12 +230,23 @@ class CameraViewController: UIViewController {
         return check
     }
     
+    private func checkCompleted(checkGesture: Bool, feature: String) {
+        if checkGesture {
+            chosen.removeFirst(1)
+            instructionsLabel.text = chosen.joined(separator: ", ")
+            if chosen.isEmpty {
+                instructionsLabel.text = "ALL GESTURES COMPLETED"
+            }
+            setStruct(gesture: feature, val: 0)
+        }
+    }
+    
     private func detectFacesOnDevice(in image: VisionImage, width: CGFloat, height: CGFloat) {
         let options = VisionFaceDetectorOptions()
         // When performing latency tests to determine ideal detection settings,
         // run the app in 'release' mode to get accurate performance metrics
         options.landmarkMode = .all
-        options.contourMode = .all
+        options.contourMode = .none
         options.classificationMode = .all
         options.isTrackingEnabled = true
         options.performanceMode = .fast
@@ -252,7 +263,7 @@ class CameraViewController: UIViewController {
             DispatchQueue.main.sync {
                 self.updatePreviewOverlayView()
                 self.removeDetectionAnnotations()
-                statusLabel.text = "FACE IS OFF SCREEN" // HOW DO I RESTART VIDEO SESSION???
+                statusLabel.text = "FACE IS OFF SCREEN"
                 reset()
             }
             return
@@ -263,46 +274,54 @@ class CameraViewController: UIViewController {
             self.updatePreviewOverlayView()
             self.removeDetectionAnnotations()
             for face in faces {
+//                let trackingID = face.trackingID
+//                if trackingID != faceID {
+//                    print(trackingID)
+//                    print(faceID)
+//                    print("ERROR: MULTIPLE FACES DETECTED")
+//                    reset()
+//                    faceID = trackingID
+//                }
+                
+//                let mouthBottom = face.landmark(ofType: .mouthBottom)
+//                let mouthBottomPosition = mouthBottom?.position
+//                print(mouthBottomPosition)
+                
                 statusLabel.text = "FACE IS NOT OFF SCREEN"
                 var checkSmile = false, checkBlink = false, checkturnRight = false, checkturnLeft = false, checktiltRight = false, checktiltLeft = false
-                if featuresStruct.smile == 1 && chosen[0] == "smile" {
+                var firstElem = ""
+                if !chosen.isEmpty {
+                    firstElem =  chosen[0]
+                }
+                if featuresStruct.smile == 1 && firstElem == "smile" {
                     let smileProb = face.smilingProbability
                     checkSmile = featureTracker(storeValue : Double(smileProb), feature: "smile", states: &smileArr)
+                    checkCompleted(checkGesture: checkSmile, feature: firstElem)
                 }
-                if featuresStruct.blink == 1  && chosen[0] == "blink" {
+                if featuresStruct.blink == 1  && firstElem == "blink" {
                     let blinkProb = (face.leftEyeOpenProbability + face.rightEyeOpenProbability) / 2
                     checkBlink = featureTracker(storeValue : Double(blinkProb), feature: "blink", states: &blinkArr)
+                    checkCompleted(checkGesture: checkBlink, feature: firstElem)
                 }
-                if featuresStruct.turnRight == 1  && chosen[0] == "turnRight" {
+                if featuresStruct.turnRight == 1  && firstElem == "turnRight" {
                     let turnProb = face.headEulerAngleY
                     checkturnRight = featureTracker(storeValue : Double(turnProb), feature: "turnRight", states: &turnArr)
+                    checkCompleted(checkGesture: checkturnRight, feature: firstElem)
                 }
-                if featuresStruct.turnLeft == 1  && chosen[0] == "turnLeft" {
+                if featuresStruct.turnLeft == 1  && firstElem == "turnLeft" {
                     let turnProb = face.headEulerAngleY
                     checkturnLeft = featureTracker(storeValue : Double(turnProb), feature: "turnLeft", states: &turnArr)
+                    checkCompleted(checkGesture: checkturnLeft, feature: firstElem)
                 }
                 if featuresStruct.tiltRight == 1  && chosen[0] == "tiltRight" {
                     let tiltProb = face.headEulerAngleZ
                     checktiltRight = featureTracker(storeValue : Double(tiltProb), feature: "tiltRight", states: &tiltArr)
+                    checkCompleted(checkGesture: checktiltRight, feature: firstElem)
                 }
                 if featuresStruct.tiltLeft == 1  && chosen[0] == "tiltLeft" {
                     let tiltProb = face.headEulerAngleZ
                     checktiltLeft = featureTracker(storeValue : Double(tiltProb), feature: "tiltLeft", states: &tiltArr)
-                }
-                let arr = [checkSmile, checkBlink, checkturnRight, checkturnLeft, checktiltRight, checktiltLeft]
-                //statusLabel.text = ""
-                //print(arr)
-                for elem in arr {
-                    if elem == true {
-                        chosen.removeFirst(1)
-                        instructionsLabel.text = chosen.joined(separator: ", ")
-                        if chosen.isEmpty {
-                            instructionsLabel.text = "ALL GESTURES COMPLETED"
-                        }
-                        let index = arr.index(of: elem)!
-                        let feature = allGestures[index]
-                        setStruct(gesture: feature, val: 0)
-                    }
+                    checkCompleted(checkGesture: checktiltLeft, feature: firstElem)
                 }
             }
         }
